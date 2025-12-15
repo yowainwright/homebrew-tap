@@ -1,26 +1,26 @@
 class Onels < Formula
   desc "1 line script - Lightweight JSON CLI with JavaScript syntax"
   homepage "https://github.com/yowainwright/1ls"
-  version "0.1.10"
+  version "0.1.11"
   license "MIT"
 
   on_macos do
     if Hardware::CPU.arm?
       url "https://github.com/yowainwright/1ls/releases/download/v#{version}/1ls-qjs-darwin-arm64"
-      sha256 "2a933b66bcef604c599fe669647dd40da1930c4fdff90528e083a39a65e962fa" # arm64
+      sha256 "c692a616047342eacb8587cb28a44a13dc2bbc27767eba2caf560d474e517423" # arm64
     else
       url "https://github.com/yowainwright/1ls/releases/download/v#{version}/1ls-qjs-darwin-x64"
-      sha256 "c28788e22e84ae9db6505861609a52ffc4ee08f1848f0bb90a206977ccefcf87" # x64
+      sha256 "b273b0759ae0e2a0fe7d334727b97b661d121df688f1ada79aa53fa0cb05f64f" # x64
     end
   end
 
   on_linux do
     if Hardware::CPU.arm?
       url "https://github.com/yowainwright/1ls/releases/download/v#{version}/1ls-qjs-linux-arm64"
-      sha256 "cf954d7854c7776979601e11706d465eef7e8c3ad8b3fe9c68d583097556d4cb" # linux-arm64
+      sha256 "d9a409b9705f7cc180f7c95bfcf08a2c403e701a34bc070baccf7654f67ce53c" # linux-arm64
     else
       url "https://github.com/yowainwright/1ls/releases/download/v#{version}/1ls-qjs-linux-x64"
-      sha256 "4fcda90131d60122ea025359f3a4dd77aa401270c8a7440d6c3c4ebdd17b7b3b" # linux-x64
+      sha256 "bbf74542f2b6e4d645a440a5334c4ffedeb4ec615e1c0ea1e69037a09285bce8" # linux-x64
     end
   end
 
