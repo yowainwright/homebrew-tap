@@ -13,6 +13,8 @@ brew tap yowainwright/tap
 | Formula | Description |
 |---------|-------------|
 | `1ls` | Lightweight JSON CLI with JavaScript syntax |
+| `fjsf` | Fuzzy search scripts from JSON, TOML, and YAML config files |
+| `pre` | Security proxy for package managers |
 | `tqs` | Compile TypeScript to fast, small standalone native binaries via QuickJS |
 
 ### 1ls
@@ -27,6 +29,32 @@ echo '{"name": "hello"}' | 1ls '.name'
 ```
 
 [Documentation](https://jeffry.in/1ls) · [GitHub](https://github.com/yowainwright/1ls)
+
+### fjsf
+
+A CLI tool for fuzzy searching and running scripts defined in JSON, TOML, and YAML config files.
+
+```bash
+brew install yowainwright/tap/fjsf
+
+# Usage
+fjsf
+```
+
+[GitHub](https://github.com/yowainwright/fjsf)
+
+### pre
+
+A security proxy for package managers that intercepts and validates package installations.
+
+```bash
+brew install yowainwright/tap/pre
+
+# Usage
+pre install <package>
+```
+
+[GitHub](https://github.com/yowainwright/pre)
 
 ### tqs
 
