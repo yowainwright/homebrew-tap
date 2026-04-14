@@ -1,8 +1,10 @@
 class Tqs < Formula
-  desc "Compile TypeScript to standalone native binaries via QuickJS"
+  desc "Compile TypeScript to fast, small standalone native binaries via QuickJS"
   homepage "https://github.com/yowainwright/tqs"
-  version "0.1.0"
+  version "0.0.4"
   license "MIT"
+
+  uses_from_macos "curl"
 
   on_macos do
     if Hardware::CPU.arm?
@@ -19,14 +21,11 @@ class Tqs < Formula
     sha256 "" # linux-x64
   end
 
-  depends_on "curl"
-
   def install
     bin.install Dir["tqs-*"].first => "tqs"
   end
 
   test do
-    output = shell_output("#{bin}/tqs --version")
-    assert_match version.to_s, output
+    assert_match version.to_s, shell_output("#{bin}/tqs --version")
   end
 end
