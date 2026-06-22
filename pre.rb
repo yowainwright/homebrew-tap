@@ -5,21 +5,21 @@
 class Pre < Formula
   desc "Security proxy for package managers"
   homepage "https://github.com/yowainwright/pre"
-  version "0.2.0"
+  version "0.3.0"
   license "MIT"
 
   on_macos do
     if Hardware::CPU.intel?
-      url "https://github.com/yowainwright/pre/releases/download/v0.2.0/pre-darwin-amd64"
-      sha256 "63401a10d0f8cfec4859a57b5836c894ea604558a55f2df558ded3d23ca3e10c"
+      url "https://github.com/yowainwright/pre/releases/download/v0.3.0/pre-darwin-amd64"
+      sha256 "16799bba94165ac92abc43cfa52373a60975d408000d7c43a76f5f19f4c78828"
 
       define_method(:install) do
         bin.install Dir["pre-*"].first => "pre"
       end
     end
     if Hardware::CPU.arm?
-      url "https://github.com/yowainwright/pre/releases/download/v0.2.0/pre-darwin-arm64"
-      sha256 "5285ba0621219e0f8faf4851768e06fec36724018dba4e8db7bc2405ce0e5c33"
+      url "https://github.com/yowainwright/pre/releases/download/v0.3.0/pre-darwin-arm64"
+      sha256 "2b95f2b3fbbf1a640c7b9a0eeb63b40682a9f6c81f321522285fad14c87d8237"
 
       define_method(:install) do
         bin.install Dir["pre-*"].first => "pre"
@@ -29,15 +29,15 @@ class Pre < Formula
 
   on_linux do
     if Hardware::CPU.intel? && Hardware::CPU.is_64_bit?
-      url "https://github.com/yowainwright/pre/releases/download/v0.2.0/pre-linux-amd64"
-      sha256 "797a949a3015a440fa962bfc4786f9467bb871ca12fc84d27fd7c3b68abc0983"
+      url "https://github.com/yowainwright/pre/releases/download/v0.3.0/pre-linux-amd64"
+      sha256 "890944abdf500a0f778a69760d2afe21bb599e799a62ca9097ac8b3f916a64f1"
       define_method(:install) do
         bin.install Dir["pre-*"].first => "pre"
       end
     end
     if Hardware::CPU.arm? && Hardware::CPU.is_64_bit?
-      url "https://github.com/yowainwright/pre/releases/download/v0.2.0/pre-linux-arm64"
-      sha256 "8d4b4480fded38c3fe47412f90f09be5f2a559c15b198f9c5401b12d265d16c5"
+      url "https://github.com/yowainwright/pre/releases/download/v0.3.0/pre-linux-arm64"
+      sha256 "17ac798d8b706b2064244ebe14732c7bdbc63782a4249a984d385fd624899ece"
       define_method(:install) do
         bin.install Dir["pre-*"].first => "pre"
       end
