@@ -11,7 +11,7 @@ class Diu < Formula
 
   if Hardware::CPU.intel?
     url "https://github.com/yowainwright/diu/releases/download/v0.1.1/diu_0.1.1_darwin_amd64.tar.gz"
-    sha256 "2f63009f943556dc4f77d9696b449fea5f811e0800ad5daf423c6ce20ea02151"
+    sha256 "40d20d534b71239dad3c460ca74ac0141ce4c2603f8a260dc59d004ad4c4e9ab"
 
     def install
       bin.install "diu"
@@ -19,7 +19,7 @@ class Diu < Formula
   end
   if Hardware::CPU.arm?
     url "https://github.com/yowainwright/diu/releases/download/v0.1.1/diu_0.1.1_darwin_arm64.tar.gz"
-    sha256 "3a3bc6dd8577620ebdfbdf32ecd60b1734b1969ee7d77cf87f3606591726febf"
+    sha256 "d66daaa36176b381fe691cf0ab0b84fdc75f48ef6113bce9542d141d91af13f4"
 
     def install
       bin.install "diu"
