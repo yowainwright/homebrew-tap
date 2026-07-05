@@ -5,21 +5,21 @@
 class Pre < Formula
   desc "Security proxy for package managers"
   homepage "https://github.com/yowainwright/pre"
-  version "0.3.0"
+  version "0.4.0"
   license "MIT"
 
   on_macos do
     if Hardware::CPU.intel?
-      url "https://github.com/yowainwright/pre/releases/download/v0.3.0/pre-darwin-amd64"
-      sha256 "16799bba94165ac92abc43cfa52373a60975d408000d7c43a76f5f19f4c78828"
+      url "https://github.com/yowainwright/pre/releases/download/v0.4.0/pre-darwin-amd64"
+      sha256 "dafb80cd9c3e6f137120c4dfe70411a21189b0d16cb0d8a3a86bb86c92d09510"
 
       define_method(:install) do
         bin.install Dir["pre-*"].first => "pre"
       end
     end
     if Hardware::CPU.arm?
-      url "https://github.com/yowainwright/pre/releases/download/v0.3.0/pre-darwin-arm64"
-      sha256 "2b95f2b3fbbf1a640c7b9a0eeb63b40682a9f6c81f321522285fad14c87d8237"
+      url "https://github.com/yowainwright/pre/releases/download/v0.4.0/pre-darwin-arm64"
+      sha256 "86698094a221386ea717112d7a4d6ecceff508b9be3c3020072825a533d3e3e4"
 
       define_method(:install) do
         bin.install Dir["pre-*"].first => "pre"
@@ -29,22 +29,33 @@ class Pre < Formula
 
   on_linux do
     if Hardware::CPU.intel? && Hardware::CPU.is_64_bit?
-      url "https://github.com/yowainwright/pre/releases/download/v0.3.0/pre-linux-amd64"
-      sha256 "890944abdf500a0f778a69760d2afe21bb599e799a62ca9097ac8b3f916a64f1"
+      url "https://github.com/yowainwright/pre/releases/download/v0.4.0/pre-linux-amd64"
+      sha256 "0b507aa4bd562272f04618e8da5a80db80123088f2f142505bb7f5e8e6ed86bc"
       define_method(:install) do
         bin.install Dir["pre-*"].first => "pre"
       end
     end
     if Hardware::CPU.arm? && Hardware::CPU.is_64_bit?
-      url "https://github.com/yowainwright/pre/releases/download/v0.3.0/pre-linux-arm64"
-      sha256 "17ac798d8b706b2064244ebe14732c7bdbc63782a4249a984d385fd624899ece"
+      url "https://github.com/yowainwright/pre/releases/download/v0.4.0/pre-linux-arm64"
+      sha256 "5ddf4b1fdea636ca0ed97a8df57eb1f705dfadeab9710ff2873ee7d4de3ffb3a"
       define_method(:install) do
         bin.install Dir["pre-*"].first => "pre"
       end
     end
   end
 
+  def caveats
+    <<~EOS
+      Shell hooks are not installed automatically. To intercept package
+      manager commands, run:
+        pre setup
+    EOS
+  end
+
   test do
     assert_match version.to_s, shell_output("#{bin}/pre --version")
+    ENV["HOME"] = testpath.to_s
+    output = shell_output("#{bin}/pre status")
+    assert_match "shell hooks: not installed", output
   end
 end
