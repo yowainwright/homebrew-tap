@@ -3,8 +3,8 @@
 class Diu < Formula
   desc "Track package-manager and global CLI usage"
   homepage "https://github.com/yowainwright/diu"
-  url "https://github.com/yowainwright/diu/archive/refs/tags/v0.1.2.tar.gz"
-  sha256 "40a417fcced7f71e178469fb6291a6d3d7b6bf67596d84b36c96f95d49cca2da"
+  url "https://github.com/yowainwright/diu/archive/refs/tags/v0.2.0.tar.gz"
+  sha256 "47c134f7c8c24d32d696e050e58a32a0aea44c3a57ba1c2752c96eef19ffcd96"
   license "MIT"
   head "https://github.com/yowainwright/diu.git", branch: "main"
 
