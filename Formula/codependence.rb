@@ -1,8 +1,8 @@
 class Codependence < Formula
   desc "Enforce dependency version policy across projects, workspaces, and CI"
   homepage "https://jeffry.in/codependence/"
-  url "https://registry.npmjs.org/codependence/-/codependence-1.0.2.tgz"
-  sha256 "8c938844a9457340e42958547ff58bee9b0f5977c6f0621fa69eeeea2d117e62"
+  url "https://registry.npmjs.org/codependence/-/codependence-1.0.11.tgz"
+  sha256 "41b23f83f551206391c342e740a5d3e9613f4aadbe1cb1107ea1750ac4eaa940"
   license "MIT"
 
   depends_on "node"
