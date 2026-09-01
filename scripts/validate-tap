@@ -47,12 +47,29 @@ end
 
 def validate_readme_block
   readme = File.read(File.join(ROOT, "README.md"))
-  match = readme.match(TapRelease::README_PATTERN)
-  return fail_with("README.md missing formulas markers") unless match
+  block = TapRelease.readme_block(readme)
+  return fail_with("README.md missing formulas markers") unless block
 
-  return if match[0] == TapRelease.readme_block
+  TapRelease.readme_brews.each do |data|
+    command = data.fetch("command")
+    section = TapRelease.readme_section(block, command)
+    formula = "Formula/#{data.fetch("name")}.rb"
+    github = "https://github.com/#{data.fetch("repo")}"
+    heading = section&.lines&.first.to_s
+    formula_link = "Install [#{command}](#{formula}) | `#{formula}`"
+    links_to_project = heading.include?(data.fetch("homepage")) || heading.include?(github)
 
-  fail_with "README.md generated formulas block is stale; run scripts/update-formula"
+    fail_with "README.md missing ### #{command} section" unless section
+    next unless section
+
+    fail_with "README.md #{command} section missing install command" unless section.include?("brew install yowainwright/tap/#{command}")
+    fail_with "README.md #{command} section missing linked heading" unless heading.start_with?("### [#{command}](")
+    fail_with "README.md #{command} section heading must link to project" unless links_to_project
+    fail_with "README.md #{command} section missing #{formula_link}" unless section.include?(formula_link)
+    fail_with "README.md #{command} section missing Usage label" unless section.include?("\nUsage\n")
+    last_line = section.lines.reject { |line| line.strip.empty? }.last&.chomp
+    fail_with "README.md #{command} section missing horizontal rule" unless last_line == "---"
+  end
 end
 
 def validate_strict_release_shape

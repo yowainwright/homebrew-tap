@@ -40,7 +40,7 @@ Avoid per-formula custom structure unless the exception is written down in the a
 
 ## Agent Release API
 
-Do not hand-edit generated formula files or generated README sections.
+Do not hand-edit generated formula files.
 
 Use repo scripts:
 
