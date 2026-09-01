@@ -67,7 +67,8 @@ def validate_readme_block
     fail_with "README.md #{command} section heading must link to project" unless links_to_project
     fail_with "README.md #{command} section missing #{formula_link}" unless section.include?(formula_link)
     fail_with "README.md #{command} section missing Usage label" unless section.include?("\nUsage\n")
-    fail_with "README.md #{command} section missing horizontal rule" unless section.include?("\n---")
+    last_line = section.lines.map(&:strip).reject(&:empty?).last
+    fail_with "README.md #{command} section missing horizontal rule" unless last_line == "---"
   end
 end
 
