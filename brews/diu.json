@@ -8,5 +8,6 @@
   "license": "MIT",
   "version": "0.2.1",
   "asset_prefix": "diu",
+  "managed": false,
   "readme": true
 }

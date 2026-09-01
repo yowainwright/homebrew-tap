@@ -8,5 +8,6 @@
   "license": "MIT",
   "version": "1.0.12",
   "asset_prefix": "codependence",
+  "managed": false,
   "readme": true
 }

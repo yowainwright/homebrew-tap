@@ -9,5 +9,13 @@ jobs:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Validate tap
+        with:
+          fetch-depth: 0
+      - name: Validate schema and generated docs
         run: scripts/validate-tap
+      - name: Validate changed release files
+        run: scripts/validate-tap --changed-strict
+      - name: Homebrew tap syntax
+        run: brew test-bot --only-tap-syntax --tap="$GITHUB_REPOSITORY"
+      - name: Homebrew changed formulae
+        run: brew test-bot --only-formulae --tap="$GITHUB_REPOSITORY" --skip-dependents

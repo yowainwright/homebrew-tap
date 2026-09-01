@@ -16,6 +16,7 @@ REQUIRED_PACKAGE_FIELDS = %w[
   license
   version
   asset_prefix
+  managed
 ].freeze
 
 @errors = []
@@ -40,6 +41,7 @@ def validate_package(path)
 
   expected_name = File.basename(path, ".json")
   fail_with "#{relative(path)} name must be #{expected_name}" unless data.fetch("name") == expected_name
+  fail_with "#{relative(path)} managed must be true or false" unless [true, false].include?(data.fetch("managed"))
 end
 
 def validate_ruby_syntax(path)
@@ -103,6 +105,37 @@ def validate_strict_release_shape
   fail_with "empty sha256 values: #{empty_sha.map { |path| relative(path) }.join(", ")}" unless empty_sha.empty?
 end
 
+def git_output(*args)
+  output, status = Open3.capture2e("git", *args, chdir: ROOT)
+  fail_with "git #{args.join(" ")} failed:\n#{output}" unless status.success?
+
+  output
+end
+
+def changed_files
+  base_ref = ENV.fetch("GITHUB_BASE_REF", "main")
+  base = "origin/#{base_ref}"
+  merge_base = git_output("merge-base", base, "HEAD").strip
+  return [] if merge_base.empty?
+
+  git_output("diff", "--name-only", "#{merge_base}...HEAD").lines.map(&:strip)
+end
+
+def validate_changed_release_shape
+  changed = changed_files
+  root_formulae = changed.select { |path| path.match?(%r{\A[^/]+\.rb\z}) }
+  fail_with "changed root formula files are not allowed: #{root_formulae.join(", ")}" unless root_formulae.empty?
+
+  casks = changed.select { |path| path.start_with?("Casks/") && path.end_with?(".rb") }
+  fail_with "changed CLI casks are not allowed: #{casks.join(", ")}" unless casks.empty?
+
+  formulae = changed.select { |path| path.start_with?("Formula/") && path.end_with?(".rb") }
+  empty_sha = formulae.select do |path|
+    File.read(File.join(ROOT, path)).match?(/sha256\s+""/)
+  end
+  fail_with "changed formulas contain empty sha256 values: #{empty_sha.join(", ")}" unless empty_sha.empty?
+end
+
 fail_with "missing brews/*.json" if package_files.empty?
 
 package_files.each { |path| validate_package(path) }
@@ -114,6 +147,7 @@ Dir[File.join(ROOT, "scripts", "*")].sort.each do |path|
 end
 validate_readme_markers
 validate_readme_block
+validate_changed_release_shape if ARGV.include?("--changed-strict")
 validate_strict_release_shape if STRICT
 
 unless @errors.empty?

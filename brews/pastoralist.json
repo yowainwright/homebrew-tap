@@ -8,5 +8,6 @@
   "license": "MIT",
   "version": "1.13.1",
   "asset_prefix": "pastoralist",
+  "managed": false,
   "readme": true
 }

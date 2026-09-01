@@ -44,6 +44,12 @@ def read_package(package)
   data
 end
 
+def ensure_managed(data)
+  return if data.fetch("managed", false) == true
+
+  abort "brews/#{data.fetch("name")}.json is not managed yet; migrate upstream to the standard asset matrix first"
+end
+
 def release_tag(data, version)
   template = data.fetch("tag_template", "v%{version}")
   template % { version: version }
@@ -132,6 +138,7 @@ package = ARGV.fetch(0) do
 end
 
 data = read_package(package)
+ensure_managed(data)
 version = ARGV[1] || data["version"]
 abort "missing version argument or package version" if version.to_s.empty?
 

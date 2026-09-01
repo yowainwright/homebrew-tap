@@ -8,5 +8,6 @@
   "license": "MIT",
   "version": "0.1.15",
   "asset_prefix": "1ls",
+  "managed": false,
   "readme": true
 }
