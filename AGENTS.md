@@ -48,6 +48,10 @@ Use repo scripts:
 - `scripts/update-formula <package> <version>`
 - `scripts/validate-tap`
 
+`brews/*.json` is inventory. The scripts may generate only entries with `managed: true`.
+
+Set `managed: true` only after upstream publishes the standard asset matrix and `command --version` prints the formula version.
+
 If a script fails, report the failed invariant and stop.
 
 ## Validation

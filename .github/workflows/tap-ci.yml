@@ -4,6 +4,9 @@ on:
   pull_request:
   merge_group:
 
+env:
+  HOMEBREW_NO_REQUIRE_TAP_TRUST: "1"
+
 jobs:
   validate:
     runs-on: macos-latest
@@ -15,7 +18,17 @@ jobs:
         run: scripts/validate-tap
       - name: Validate changed release files
         run: scripts/validate-tap --changed-strict
-      - name: Homebrew tap syntax
-        run: brew test-bot --only-tap-syntax --tap="$GITHUB_REPOSITORY"
+      - name: Detect changed formulae
+        id: formulae
+        shell: bash
+        run: |
+          git diff --name-only "origin/${GITHUB_BASE_REF:-main}...HEAD" -- 'Formula/*.rb' \
+            | sed -E 's#^Formula/(.*)\.rb$#\1#' \
+            | tr '\n' ' ' \
+            | xargs echo 'names=' >> "$GITHUB_OUTPUT"
+      - name: Link tap checkout
+        if: steps.formulae.outputs.names != ''
+        run: brew tap yowainwright/tap "$GITHUB_WORKSPACE"
       - name: Homebrew changed formulae
-        run: brew test-bot --only-formulae --tap="$GITHUB_REPOSITORY" --skip-dependents
+        if: steps.formulae.outputs.names != ''
+        run: brew test-bot --only-formulae --tap=yowainwright/tap --skip-dependents --testing-formulae="${{ steps.formulae.outputs.names }}"

@@ -8,6 +8,6 @@
   "license": "MIT",
   "version": "1.1.1",
   "asset_prefix": "pk",
-  "managed": true,
+  "managed": false,
   "readme": false
 }
