@@ -86,16 +86,6 @@ def package_files
   TapRelease.brew_files
 end
 
-def sync_readme
-  path = File.join(repo_root, "README.md")
-  readme = File.read(path)
-  updated = TapRelease.replace_readme_block(readme)
-
-  abort "README.md must contain exactly one formulas block" unless updated
-
-  File.write(path, updated)
-end
-
 def write_package(data)
   path = package_path(data.fetch("name"))
   File.write(path, "#{JSON.pretty_generate(data)}\n")
@@ -127,7 +117,6 @@ formula_path = File.join(repo_root, "Formula", "#{data.fetch("name")}.rb")
 FileUtils.mkdir_p(File.dirname(formula_path))
 File.write(formula_path, render_formula(data, version, assets))
 write_package(data)
-sync_readme
 validate_tap
 
 puts "updated Formula/#{data.fetch("name")}.rb"

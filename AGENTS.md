@@ -52,6 +52,8 @@ Use repo scripts:
 
 Set `managed: true` only after upstream publishes the standard asset matrix and `command --version` prints the formula version.
 
+README package sections are manual. Preserve examples and prose; validation checks that each `readme: true` brew has a section, install command, usage example, project link, and formula path.
+
 If a script fails, report the failed invariant and stop.
 
 ## Validation
