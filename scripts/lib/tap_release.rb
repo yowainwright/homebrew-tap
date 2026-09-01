@@ -55,7 +55,9 @@ module TapRelease
   end
 
   def self.readme_section(block, command)
-    pattern = /^### #{Regexp.escape(command)}\n.*?(?=^### |#{Regexp.escape(README_END)})/m
+    command_pattern = Regexp.escape(command)
+    heading = /### (?:#{command_pattern}|\[#{command_pattern}\]\([^)]+\))/
+    pattern = /^#{heading}\n.*?(?=^### |#{Regexp.escape(README_END)})/m
     block.match(pattern)&.to_s
   end
 end

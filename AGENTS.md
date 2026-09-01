@@ -40,7 +40,7 @@ Avoid per-formula custom structure unless the exception is written down in the a
 
 ## Agent Release API
 
-Do not hand-edit generated formula files or generated README sections.
+Do not hand-edit generated formula files.
 
 Use repo scripts:
 
@@ -51,8 +51,6 @@ Use repo scripts:
 `brews/*.json` is inventory. The scripts may generate only entries with `managed: true`.
 
 Set `managed: true` only after upstream publishes the standard asset matrix and `command --version` prints the formula version.
-
-README package sections are manual. Preserve examples and prose; validation checks that each `readme: true` brew has a section, install command, usage example, project link, and formula path.
 
 If a script fails, report the failed invariant and stop.
 

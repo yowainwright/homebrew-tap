@@ -55,15 +55,19 @@ def validate_readme_block
     section = TapRelease.readme_section(block, command)
     formula = "Formula/#{data.fetch("name")}.rb"
     github = "https://github.com/#{data.fetch("repo")}"
-    links_to_project = section&.include?(data.fetch("homepage")) || section&.include?(github)
+    heading = section&.lines&.first.to_s
+    formula_link = "Install [#{command}](#{formula}) | `#{formula}`"
+    links_to_project = heading.include?(data.fetch("homepage")) || heading.include?(github)
 
     fail_with "README.md missing ### #{command} section" unless section
     next unless section
 
     fail_with "README.md #{command} section missing install command" unless section.include?("brew install yowainwright/tap/#{command}")
-    fail_with "README.md #{command} section missing usage example" unless section.include?("# Usage")
-    fail_with "README.md #{command} section missing project link" unless links_to_project
-    fail_with "README.md #{command} section missing #{formula}" unless section.include?(formula)
+    fail_with "README.md #{command} section missing linked heading" unless heading.start_with?("### [#{command}](")
+    fail_with "README.md #{command} section heading must link to project" unless links_to_project
+    fail_with "README.md #{command} section missing #{formula_link}" unless section.include?(formula_link)
+    fail_with "README.md #{command} section missing Usage label" unless section.include?("\nUsage\n")
+    fail_with "README.md #{command} section missing horizontal rule" unless section.include?("\n---")
   end
 end
 
