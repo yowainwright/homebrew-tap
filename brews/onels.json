@@ -1,0 +1,12 @@
+{
+  "name": "onels",
+  "class_name": "Onels",
+  "command": "1ls",
+  "repo": "yowainwright/1ls",
+  "desc": "Lightweight JSON CLI with JavaScript syntax",
+  "homepage": "https://github.com/yowainwright/1ls",
+  "license": "MIT",
+  "version": "0.1.15",
+  "asset_prefix": "1ls",
+  "readme": true
+}

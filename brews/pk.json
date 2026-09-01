@@ -1,0 +1,12 @@
+{
+  "name": "pk",
+  "class_name": "Pk",
+  "command": "pk",
+  "repo": "yowainwright/pk",
+  "desc": "Safe-by-default local development process cleanup",
+  "homepage": "https://github.com/yowainwright/pk",
+  "license": "MIT",
+  "version": "1.1.1",
+  "asset_prefix": "pk",
+  "readme": false
+}

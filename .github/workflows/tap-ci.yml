@@ -1,0 +1,13 @@
+name: tap-ci
+
+on:
+  pull_request:
+  merge_group:
+
+jobs:
+  validate:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate tap
+        run: scripts/validate-tap
