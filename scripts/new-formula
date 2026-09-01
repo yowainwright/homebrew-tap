@@ -1,0 +1,11 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+package = ARGV.fetch(0) do
+  abort "usage: scripts/new-formula <package> [version]"
+end
+
+formula = File.join(__dir__, "..", "Formula", "#{package}.rb")
+abort "Formula/#{package}.rb already exists; use scripts/update-formula" if File.exist?(formula)
+
+exec File.join(__dir__, "update-formula"), *ARGV

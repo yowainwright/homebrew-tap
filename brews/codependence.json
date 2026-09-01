@@ -1,0 +1,13 @@
+{
+  "name": "codependence",
+  "class_name": "Codependence",
+  "command": "codependence",
+  "repo": "yowainwright/codependence",
+  "desc": "Enforce dependency version policy across projects, workspaces, and CI",
+  "homepage": "https://jeffry.in/codependence/",
+  "license": "MIT",
+  "version": "1.0.12",
+  "asset_prefix": "codependence",
+  "managed": false,
+  "readme": true
+}

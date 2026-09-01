@@ -1,0 +1,133 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require "digest"
+require "erb"
+require "fileutils"
+require "net/http"
+require "open-uri"
+require "openssl"
+require_relative "lib/tap_release"
+
+FETCH_ERRORS = [
+  Errno::ECONNRESET,
+  Net::OpenTimeout,
+  Net::ReadTimeout,
+  OpenSSL::SSL::SSLError,
+  OpenURI::HTTPError,
+  SocketError,
+  SystemCallError
+].freeze
+
+def repo_root
+  TapRelease::ROOT
+end
+
+def package_path(package)
+  TapRelease.brew_path(package)
+end
+
+def read_package(package)
+  path = package_path(package)
+  abort "missing #{path}" unless File.exist?(path)
+
+  data = TapRelease.read_brew(path)
+  missing = TapRelease::REQUIRED_BREW_FIELDS.select { |field| data[field].to_s.empty? }
+  abort "missing package fields: #{missing.join(", ")}" unless missing.empty?
+
+  data
+end
+
+def ensure_managed(data)
+  return if data.fetch("managed", false) == true
+
+  abort "brews/#{data.fetch("name")}.json is not managed yet; migrate upstream to the standard asset matrix first"
+end
+
+def release_tag(data, version)
+  template = data.fetch("tag_template", "v%{version}")
+  template % { version: version }
+end
+
+def asset_url(data, version, target)
+  tag = release_tag(data, version)
+  asset = "#{data.fetch("asset_prefix")}-#{target}"
+  "https://github.com/#{data.fetch("repo")}/releases/download/#{tag}/#{asset}"
+end
+
+def fetch_sha256(url)
+  digest = Digest::SHA256.new
+
+  URI.open(url, open_timeout: 10, read_timeout: 60) do |io|
+    while (chunk = io.read(1024 * 1024))
+      digest.update(chunk)
+    end
+  end
+
+  digest.hexdigest
+rescue *FETCH_ERRORS => error
+  abort "failed to fetch #{url}: #{error.message}"
+end
+
+def render_formula(data, version, assets)
+  template = File.read(File.join(repo_root, "templates", "binary-formula.rb.erb"))
+
+  class_name = data.fetch("class_name")
+  command = data.fetch("command")
+  desc = data.fetch("desc")
+  homepage = data.fetch("homepage")
+  license = data.fetch("license")
+  asset_prefix = data.fetch("asset_prefix")
+
+  ERB.new(template, trim_mode: "-").result(binding)
+end
+
+def package_files
+  TapRelease.brew_files
+end
+
+def sync_readme
+  path = File.join(repo_root, "README.md")
+  readme = File.read(path)
+  updated = TapRelease.replace_readme_block(readme)
+
+  abort "README.md must contain exactly one formulas block" unless updated
+
+  File.write(path, updated)
+end
+
+def write_package(data)
+  path = package_path(data.fetch("name"))
+  File.write(path, "#{JSON.pretty_generate(data)}\n")
+end
+
+def validate_tap
+  script = File.join(repo_root, "scripts", "validate-tap")
+  return if system(script)
+
+  abort "scripts/validate-tap failed"
+end
+
+package = ARGV.fetch(0) do
+  abort "usage: scripts/update-formula <package> [version]"
+end
+
+data = read_package(package)
+ensure_managed(data)
+version = ARGV[1] || data["version"]
+abort "missing version argument or package version" if version.to_s.empty?
+
+assets = TapRelease::TARGETS.to_h do |target|
+  url = asset_url(data, version, target)
+  [target, { "url" => url, "sha256" => fetch_sha256(url) }]
+end
+
+data["version"] = version
+formula_path = File.join(repo_root, "Formula", "#{data.fetch("name")}.rb")
+FileUtils.mkdir_p(File.dirname(formula_path))
+File.write(formula_path, render_formula(data, version, assets))
+write_package(data)
+sync_readme
+validate_tap
+
+puts "updated Formula/#{data.fetch("name")}.rb"

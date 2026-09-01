@@ -1,0 +1,13 @@
+{
+  "name": "fjsf",
+  "class_name": "Fjsf",
+  "command": "fjsf",
+  "repo": "yowainwright/fjsf",
+  "desc": "Fuzzy search scripts from JSON, TOML, and YAML config files",
+  "homepage": "https://github.com/yowainwright/fjsf",
+  "license": "MIT",
+  "version": "0.2.10",
+  "asset_prefix": "fjsf",
+  "managed": false,
+  "readme": true
+}

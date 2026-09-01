@@ -1,0 +1,13 @@
+{
+  "name": "pre",
+  "class_name": "Pre",
+  "command": "pre",
+  "repo": "yowainwright/pre",
+  "desc": "Security proxy for package managers",
+  "homepage": "https://github.com/yowainwright/pre",
+  "license": "MIT",
+  "version": "0.5.1",
+  "asset_prefix": "pre",
+  "managed": false,
+  "readme": true
+}

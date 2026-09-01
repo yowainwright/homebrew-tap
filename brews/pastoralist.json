@@ -1,0 +1,13 @@
+{
+  "name": "pastoralist",
+  "class_name": "Pastoralist",
+  "command": "pastoralist",
+  "repo": "yowainwright/pastoralist",
+  "desc": "Audit, secure, and clean up package manager overrides",
+  "homepage": "https://jeffry.in/pastoralist/",
+  "license": "MIT",
+  "version": "1.13.1",
+  "asset_prefix": "pastoralist",
+  "managed": false,
+  "readme": true
+}

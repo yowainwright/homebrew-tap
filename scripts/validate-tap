@@ -1,0 +1,122 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require "json"
+require "open3"
+require_relative "lib/tap_release"
+
+ROOT = TapRelease::ROOT
+STRICT = ARGV.include?("--strict")
+
+@errors = []
+
+def fail_with(message)
+  @errors << message
+end
+
+def relative(path)
+  path.delete_prefix("#{ROOT}/")
+end
+
+def package_files
+  TapRelease.brew_files
+end
+
+def validate_package(path)
+  data = TapRelease.read_brew(path)
+  missing = TapRelease::REQUIRED_BREW_FIELDS.select { |field| data[field].to_s.empty? }
+  fail_with "#{relative(path)} missing fields: #{missing.join(", ")}" unless missing.empty?
+  return unless missing.empty?
+
+  expected_name = File.basename(path, ".json")
+  fail_with "#{relative(path)} name must be #{expected_name}" unless data.fetch("name") == expected_name
+  fail_with "#{relative(path)} managed must be true or false" unless [true, false].include?(data.fetch("managed"))
+end
+
+def validate_ruby_syntax(path)
+  output, status = Open3.capture2e("ruby", "-c", path)
+  fail_with "#{relative(path)} failed ruby syntax:\n#{output}" unless status.success?
+end
+
+def validate_readme_markers
+  readme = File.read(File.join(ROOT, "README.md"))
+  start_count = readme.scan("<!-- formulas:start -->").count
+  end_count = readme.scan("<!-- formulas:end -->").count
+  fail_with "README.md must contain one generated formulas block" unless start_count == 1 && end_count == 1
+end
+
+def validate_readme_block
+  readme = File.read(File.join(ROOT, "README.md"))
+  match = readme.match(TapRelease::README_PATTERN)
+  return fail_with("README.md missing formulas markers") unless match
+
+  return if match[0] == TapRelease.readme_block
+
+  fail_with "README.md generated formulas block is stale; run scripts/update-formula"
+end
+
+def validate_strict_release_shape
+  root_formulae = Dir[File.join(ROOT, "*.rb")]
+  fail_with "root formula files are not allowed: #{root_formulae.map { |path| relative(path) }.join(", ")}" unless root_formulae.empty?
+
+  casks = Dir[File.join(ROOT, "Casks", "*.rb")]
+  fail_with "CLI casks are not allowed: #{casks.map { |path| relative(path) }.join(", ")}" unless casks.empty?
+
+  empty_sha = Dir[File.join(ROOT, "Formula", "*.rb")].select do |path|
+    File.read(path).match?(/sha256\s+""/)
+  end
+  fail_with "empty sha256 values: #{empty_sha.map { |path| relative(path) }.join(", ")}" unless empty_sha.empty?
+end
+
+def git_output(*args)
+  output, status = Open3.capture2e("git", *args, chdir: ROOT)
+  fail_with "git #{args.join(" ")} failed:\n#{output}" unless status.success?
+
+  output
+end
+
+def changed_files
+  base_ref = ENV.fetch("GITHUB_BASE_REF", "main")
+  base = "origin/#{base_ref}"
+  merge_base = git_output("merge-base", base, "HEAD").strip
+  return [] if merge_base.empty?
+
+  git_output("diff", "--name-only", "#{merge_base}...HEAD").lines.map(&:strip)
+end
+
+def validate_changed_release_shape
+  changed = changed_files
+  root_formulae = changed.select { |path| path.match?(%r{\A[^/]+\.rb\z}) }
+  fail_with "changed root formula files are not allowed: #{root_formulae.join(", ")}" unless root_formulae.empty?
+
+  casks = changed.select { |path| path.start_with?("Casks/") && path.end_with?(".rb") }
+  fail_with "changed CLI casks are not allowed: #{casks.join(", ")}" unless casks.empty?
+
+  formulae = changed.select { |path| path.start_with?("Formula/") && path.end_with?(".rb") }
+  empty_sha = formulae.select do |path|
+    File.read(File.join(ROOT, path)).match?(/sha256\s+""/)
+  end
+  fail_with "changed formulas contain empty sha256 values: #{empty_sha.join(", ")}" unless empty_sha.empty?
+end
+
+fail_with "missing brews/*.json" if package_files.empty?
+
+package_files.each { |path| validate_package(path) }
+Dir[File.join(ROOT, "Formula", "*.rb")].sort.each { |path| validate_ruby_syntax(path) }
+Dir[File.join(ROOT, "scripts", "*")].sort.each do |path|
+  next unless File.file?(path)
+  next unless File.read(path, 32).start_with?("#!/usr/bin/env ruby")
+
+  validate_ruby_syntax(path)
+end
+validate_readme_markers
+validate_readme_block
+validate_changed_release_shape if ARGV.include?("--changed-strict")
+validate_strict_release_shape if STRICT
+
+unless @errors.empty?
+  warn @errors.join("\n")
+  exit 1
+end
+
+puts STRICT ? "tap validation passed in strict mode" : "tap validation passed"

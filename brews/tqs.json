@@ -1,0 +1,13 @@
+{
+  "name": "tqs",
+  "class_name": "Tqs",
+  "command": "tqs",
+  "repo": "yowainwright/tqs",
+  "desc": "Compile TypeScript to fast, small standalone native binaries via QuickJS",
+  "homepage": "https://github.com/yowainwright/tqs",
+  "license": "MIT",
+  "version": "0.0.5",
+  "asset_prefix": "tqs",
+  "managed": false,
+  "readme": true
+}

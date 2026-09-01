@@ -1,0 +1,13 @@
+{
+  "name": "diu",
+  "class_name": "Diu",
+  "command": "diu",
+  "repo": "yowainwright/diu",
+  "desc": "Track package-manager and global CLI usage",
+  "homepage": "https://github.com/yowainwright/diu",
+  "license": "MIT",
+  "version": "0.2.1",
+  "asset_prefix": "diu",
+  "managed": false,
+  "readme": true
+}
