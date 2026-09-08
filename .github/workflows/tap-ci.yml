@@ -24,8 +24,8 @@ jobs:
         run: |
           git diff --name-only "origin/${GITHUB_BASE_REF:-main}...HEAD" -- 'Formula/*.rb' \
             | sed -E 's#^Formula/(.*)\.rb$#\1#' \
-            | tr '\n' ' ' \
-            | xargs echo 'names=' >> "$GITHUB_OUTPUT"
+            | paste -sd, - \
+            | sed 's/^/names=/' >> "$GITHUB_OUTPUT"
       - name: Link tap checkout
         if: steps.formulae.outputs.names != ''
         run: brew tap yowainwright/tap "$GITHUB_WORKSPACE"
