@@ -139,6 +139,25 @@ tqs my-script.ts   # outputs ./my-script — a standalone native binary
 ```
 
 ---
+
+### [fs-lint](https://github.com/yowainwright/fs-lint)
+
+Enforce project file and folder structure.
+
+Install [fs-lint](Formula/fs-lint.rb) | `Formula/fs-lint.rb`
+
+```bash
+brew install yowainwright/tap/fs-lint
+```
+
+Usage
+
+```bash
+fs-lint check --staged
+```
+
+---
+
 <!-- formulas:end -->
 
 ## Updating
