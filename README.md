@@ -68,6 +68,24 @@ diu scan
 
 ---
 
+### [es-check](https://github.com/yowainwright/es-check)
+
+Check JavaScript files against a requested ECMAScript version
+
+Install [es-check](Formula/es-check.rb) | `Formula/es-check.rb`
+
+```bash
+brew install yowainwright/tap/es-check
+```
+
+Usage
+
+```bash
+es-check --help
+```
+
+---
+
 ### [fjsf](https://github.com/yowainwright/fjsf)
 
 A CLI tool for fuzzy searching and running scripts defined in JSON, TOML, and YAML config files.

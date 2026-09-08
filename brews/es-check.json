@@ -1,0 +1,13 @@
+{
+  "name": "es-check",
+  "class_name": "EsCheck",
+  "command": "es-check",
+  "repo": "yowainwright/es-check",
+  "desc": "Check JavaScript files against a requested ECMAScript version",
+  "homepage": "https://github.com/yowainwright/es-check",
+  "license": "MIT",
+  "version": "9.6.4",
+  "asset_prefix": "es-check",
+  "managed": false,
+  "readme": true
+}
