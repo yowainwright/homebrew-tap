@@ -32,7 +32,12 @@ class <%= class_name %> < Formula
   end
 
   def install
+<% if data.fetch("archive", false) -%>
+    bin.install "<%= command %>"
+    pkgshare.install "LICENSE", "LICENSES"
+<% else -%>
     bin.install Dir["<%= asset_prefix %>-*"].first => "<%= command %>"
+<% end -%>
   end
 
   test do

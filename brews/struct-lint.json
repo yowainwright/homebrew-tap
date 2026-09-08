@@ -1,0 +1,14 @@
+{
+  "name": "struct-lint",
+  "class_name": "StructLint",
+  "command": "struct-lint",
+  "repo": "yowainwright/struct-lint",
+  "desc": "Check declaration and function order in source files",
+  "homepage": "https://github.com/yowainwright/struct-lint",
+  "license": "MIT",
+  "version": "0.1.0",
+  "asset_prefix": "struct-lint",
+  "archive": true,
+  "managed": false,
+  "readme": false
+}
