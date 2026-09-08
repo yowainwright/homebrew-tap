@@ -7,13 +7,21 @@ on:
 env:
   HOMEBREW_NO_REQUIRE_TAP_TRUST: "1"
 
+permissions:
+  contents: read
+
 jobs:
   validate:
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
+          persist-credentials: false
+      - name: Set up tap Ruby
+        run: |
+          brew list ruby >/dev/null 2>&1 || brew install ruby
+          echo "$(brew --prefix ruby)/bin" >> "$GITHUB_PATH"
       - name: Validate schema and generated docs
         run: scripts/validate-tap
       - name: Validate changed release files
