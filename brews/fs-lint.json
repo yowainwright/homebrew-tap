@@ -6,7 +6,7 @@
   "desc": "Enforce project file and folder structure",
   "homepage": "https://github.com/yowainwright/fs-lint",
   "license": "MIT",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "asset_prefix": "fs-lint",
   "managed": true,
   "readme": true
