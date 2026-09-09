@@ -15,7 +15,8 @@ This repository is a Homebrew tap for yowainwright CLI tools. Optimize changes f
 - Do not add CLI casks. Reserve `Casks/` for app-style artifacts only.
 - Do not keep formulae at the repository root.
 - Prefer one standard binary formula lane for every CLI package.
-- Each formula must have `desc`, `homepage`, `version`, `license`, platform URLs, non-empty `sha256` values, one `install` block, and a real `test do` block.
+- Each formula must have `desc`, `homepage`, a detected version, `license`, platform URLs, non-empty `sha256` values, one `install` block, and a real `test do` block.
+- Let Homebrew infer versions from release URLs. Add an explicit `version` only when detection fails or is incorrect; redundant declarations fail `brew audit --strict`. The shared binary template uses versioned release URLs for both raw binaries and archives. See https://docs.brew.sh/Formula-Cookbook#grab-the-url.
 - One package release per pull request.
 
 ## Formula Shape
