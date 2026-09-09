@@ -175,7 +175,6 @@ fs-lint check --staged
 ```
 
 ---
-
 <!-- formulas:end -->
 
 ## Updating
