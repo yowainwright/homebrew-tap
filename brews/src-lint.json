@@ -8,6 +8,6 @@
   "license": "MIT",
   "version": "0.1.0",
   "asset_prefix": "src-lint",
-  "managed": false,
-  "readme": false
+  "managed": true,
+  "readme": true
 }
