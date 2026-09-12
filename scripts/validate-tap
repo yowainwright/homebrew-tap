@@ -31,6 +31,8 @@ def validate_package(path)
   expected_name = File.basename(path, ".json")
   fail_with "#{relative(path)} name must be #{expected_name}" unless data.fetch("name") == expected_name
   fail_with "#{relative(path)} managed must be true or false" unless [true, false].include?(data.fetch("managed"))
+  valid_archive = [true, false].include?(data.fetch("archive", false))
+  fail_with "#{relative(path)} archive must be true or false" unless valid_archive
 end
 
 def validate_ruby_syntax(path)

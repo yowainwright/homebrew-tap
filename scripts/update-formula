@@ -51,7 +51,8 @@ end
 
 def asset_url(data, version, target)
   tag = release_tag(data, version)
-  asset = "#{data.fetch("asset_prefix")}-#{target}"
+  suffix = data.fetch("archive", false) ? ".tar.gz" : ""
+  asset = "#{data.fetch("asset_prefix")}-#{target}#{suffix}"
   "https://github.com/#{data.fetch("repo")}/releases/download/#{tag}/#{asset}"
 end
 

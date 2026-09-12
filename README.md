@@ -68,6 +68,24 @@ diu scan
 
 ---
 
+### [es-check](https://github.com/yowainwright/es-check)
+
+Check JavaScript files against a requested ECMAScript version
+
+Install [es-check](Formula/es-check.rb) | `Formula/es-check.rb`
+
+```bash
+brew install yowainwright/tap/es-check
+```
+
+Usage
+
+```bash
+es-check --help
+```
+
+---
+
 ### [fjsf](https://github.com/yowainwright/fjsf)
 
 A CLI tool for fuzzy searching and running scripts defined in JSON, TOML, and YAML config files.
@@ -139,6 +157,43 @@ tqs my-script.ts   # outputs ./my-script — a standalone native binary
 ```
 
 ---
+
+### [fs-lint](https://github.com/yowainwright/fs-lint)
+
+Enforce project file and folder structure.
+
+Install [fs-lint](Formula/fs-lint.rb) | `Formula/fs-lint.rb`
+
+```bash
+brew install yowainwright/tap/fs-lint
+```
+
+Usage
+
+```bash
+fs-lint check --staged
+```
+
+---
+
+### [src-lint](https://github.com/yowainwright/src-lint)
+
+Enforce import boundaries across services and packages.
+
+Install [src-lint](Formula/src-lint.rb) | `Formula/src-lint.rb`
+
+```bash
+brew install yowainwright/tap/src-lint
+```
+
+Usage
+
+```bash
+src-lint check . --strict
+```
+
+---
+
 <!-- formulas:end -->
 
 ## Updating
