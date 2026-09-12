@@ -6,6 +6,7 @@ on:
 
 env:
   HOMEBREW_NO_REQUIRE_TAP_TRUST: "1"
+  HOMEBREW_GITHUB_API_TOKEN: ${{ github.token }}
 
 permissions:
   contents: read
@@ -31,7 +32,7 @@ jobs:
         shell: bash
         run: |
           git diff --name-only "origin/${GITHUB_BASE_REF:-main}...HEAD" -- 'Formula/*.rb' \
-            | sed -E 's#^Formula/(.*)\.rb$#\1#' \
+            | sed -E 's#^Formula/(.*)\.rb$#yowainwright/tap/\1#' \
             | paste -sd, - \
             | sed 's/^/names=/' >> "$GITHUB_OUTPUT"
       - name: Link tap checkout
