@@ -98,7 +98,7 @@ def changed_files
   merge_base = git_output("merge-base", base, "HEAD").strip
   return [] if merge_base.empty?
 
-  git_output("diff", "--name-only", "#{merge_base}...HEAD").lines.map(&:strip)
+  git_output("diff", "--name-only", "--diff-filter=d", "#{merge_base}...HEAD").lines.map(&:strip)
 end
 
 def validate_changed_release_shape
