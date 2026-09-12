@@ -176,6 +176,24 @@ fs-lint check --staged
 
 ---
 
+### [src-lint](https://github.com/yowainwright/src-lint)
+
+Enforce import boundaries across services and packages.
+
+Install [src-lint](Formula/src-lint.rb) | `Formula/src-lint.rb`
+
+```bash
+brew install yowainwright/tap/src-lint
+```
+
+Usage
+
+```bash
+src-lint check . --strict
+```
+
+---
+
 <!-- formulas:end -->
 
 ## Updating
