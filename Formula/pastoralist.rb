@@ -1,8 +1,8 @@
 class Pastoralist < Formula
   desc "Audit, secure, and clean up package manager overrides"
   homepage "https://jeffry.in/pastoralist/"
-  url "https://registry.npmjs.org/pastoralist/-/pastoralist-1.13.2.tgz"
-  sha256 "6e1fadbe151b02d9670eadbe70573658657a71bea411eacbc24edbd266b8af56"
+  url "https://registry.npmjs.org/pastoralist/-/pastoralist-1.13.3.tgz"
+  sha256 "aa4a37c0328dc0d053468966d27dc4b3e68cb695920fcf65b4d57e6819a817c7"
   license "MIT"
 
   depends_on "node"
