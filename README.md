@@ -13,24 +13,6 @@ brew tap yowainwright/tap
 <!-- formulas:start -->
 <!-- manual sections; scripts/validate-tap checks required install, usage, and links -->
 
-### [1ls](https://github.com/yowainwright/1ls)
-
-A fast, lightweight JSON processor using familiar JavaScript syntax.
-
-Install [1ls](Formula/onels.rb) | `Formula/onels.rb`
-
-```bash
-brew install yowainwright/tap/1ls
-```
-
-Usage
-
-```bash
-echo '{"name": "hello"}' | 1ls '.name'
-```
-
----
-
 ### [codependence](https://jeffry.in/codependence/)
 
 Enforce dependency version policy across projects, workspaces, and CI

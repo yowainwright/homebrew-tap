@@ -1,0 +1,13 @@
+{
+  "name": "legibility",
+  "class_name": "Legibility",
+  "command": "legibility",
+  "repo": "yowainwright/legibility",
+  "desc": "Configure existing Legibility tools for readable code",
+  "homepage": "https://github.com/yowainwright/legibility",
+  "license": "MIT",
+  "version": "0.0.0",
+  "asset_prefix": "legibility",
+  "managed": false,
+  "readme": false
+}

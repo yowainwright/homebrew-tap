@@ -31,7 +31,7 @@ jobs:
         id: formulae
         shell: bash
         run: |
-          git diff --name-only "origin/${GITHUB_BASE_REF:-main}...HEAD" -- 'Formula/*.rb' \
+          git diff --name-only --diff-filter=d "origin/${GITHUB_BASE_REF:-main}...HEAD" -- 'Formula/*.rb' \
             | sed -E 's#^Formula/(.*)\.rb$#yowainwright/tap/\1#' \
             | paste -sd, - \
             | sed 's/^/names=/' >> "$GITHUB_OUTPUT"
