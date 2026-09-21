@@ -157,6 +157,23 @@ fs-lint check --staged
 ```
 
 ---
+### [legibility](https://github.com/yowainwright/legibility)
+
+Configure existing Legibility tools for readable code.
+
+Install [legibility](Formula/legibility.rb) | `Formula/legibility.rb`
+
+```bash
+brew install yowainwright/tap/legibility
+```
+
+Usage
+
+```bash
+legibility --help
+```
+
+---
 ### [src-lint](https://github.com/yowainwright/src-lint)
 
 Enforce import boundaries across services and packages.
