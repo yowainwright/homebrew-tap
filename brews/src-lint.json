@@ -6,7 +6,7 @@
   "desc": "Enforce import boundaries across services and packages",
   "homepage": "https://github.com/yowainwright/src-lint",
   "license": "MIT",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "asset_prefix": "src-lint",
   "managed": true,
   "readme": true

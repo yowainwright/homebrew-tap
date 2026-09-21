@@ -157,7 +157,6 @@ fs-lint check --staged
 ```
 
 ---
-
 ### [src-lint](https://github.com/yowainwright/src-lint)
 
 Enforce import boundaries across services and packages.
