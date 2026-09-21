@@ -6,9 +6,9 @@
   "desc": "Shell legibility checks that sit beside ShellCheck",
   "homepage": "https://github.com/yowainwright/shellcheck_legibility",
   "license": "MIT",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "asset_prefix": "shellcheck-legibility",
   "archive": true,
-  "managed": false,
+  "managed": true,
   "readme": false
 }
