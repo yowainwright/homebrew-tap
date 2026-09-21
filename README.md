@@ -122,24 +122,6 @@ pre install <package>
 
 ---
 
-### [tqs](https://github.com/yowainwright/tqs)
-
-Compile TypeScript to tiny (~1MB) standalone native binaries with QuickJS embedded. No Node.js, no V8, no runtime dependencies.
-
-Install [tqs](Formula/tqs.rb) | `Formula/tqs.rb`
-
-```bash
-brew install yowainwright/tap/tqs
-```
-
-Usage
-
-```bash
-tqs my-script.ts   # outputs ./my-script — a standalone native binary
-```
-
----
-
 ### [fs-lint](https://github.com/yowainwright/fs-lint)
 
 Enforce project file and folder structure.

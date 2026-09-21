@@ -23,8 +23,8 @@ jobs:
         run: |
           brew list ruby >/dev/null 2>&1 || brew install ruby
           echo "$(brew --prefix ruby)/bin" >> "$GITHUB_PATH"
-      - name: Validate schema and generated docs
-        run: scripts/validate-tap
+      - name: Validate schema, generated docs, and release shape
+        run: scripts/validate-tap --strict
       - name: Validate changed release files
         run: scripts/validate-tap --changed-strict
       - name: Detect changed formulae
