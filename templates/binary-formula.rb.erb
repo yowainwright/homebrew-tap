@@ -9,6 +9,10 @@ class <%= class_name %> < Formula
   revision <%= data.fetch("revision") %>
 <% end -%>
 
+<% unless assets.key?("linux-arm64") -%>
+  depends_on :macos
+
+<% end -%>
 <% if assets.key?("darwin-arm64") -%>
   on_macos do
     on_arm do
@@ -35,10 +39,6 @@ class <%= class_name %> < Formula
       sha256 "<%= assets.fetch("linux-amd64").fetch("sha256") %>"
     end
   end
-
-<% end -%>
-<% unless assets.key?("linux-arm64") -%>
-  depends_on :macos
 
 <% end -%>
   def install

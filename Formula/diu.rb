@@ -7,6 +7,8 @@ class Diu < Formula
   license "MIT"
   revision 1
 
+  depends_on :macos
+
   on_macos do
     on_arm do
       url "https://github.com/yowainwright/diu/releases/download/v0.2.3/diu_0.2.3_darwin_arm64.tar.gz"
@@ -18,8 +20,6 @@ class Diu < Formula
       sha256 "1eb613c13590bd4f15a880f7f34fb33b10a38b843ae053dbf069423306bfe5c9"
     end
   end
-
-  depends_on :macos
 
   def install
     bin.install "diu"
