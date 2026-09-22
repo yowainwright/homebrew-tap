@@ -6,8 +6,17 @@
   "desc": "Track package-manager and global CLI usage",
   "homepage": "https://github.com/yowainwright/diu",
   "license": "MIT",
-  "version": "0.2.1",
+  "version": "0.2.3",
   "asset_prefix": "diu",
-  "managed": false,
-  "readme": true
+  "managed": true,
+  "readme": true,
+  "archive": true,
+  "platforms": [
+    "darwin"
+  ],
+  "asset_template": "diu_%{version}_%{os}_%{arch}.tar.gz",
+  "archive_files": [
+    "LICENSE"
+  ],
+  "revision": 1
 }

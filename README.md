@@ -35,6 +35,9 @@ codependence --help
 
 Track package-manager and global CLI usage
 
+<!-- DIU installation derived from brews/diu.json and Formula/diu.rb -->
+Installs the prebuilt Apple Silicon or Intel Mac binary. Go is not required.
+
 Install [diu](Formula/diu.rb) | `Formula/diu.rb`
 
 ```bash

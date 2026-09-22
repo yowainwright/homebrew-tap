@@ -26,6 +26,30 @@ module TapRelease
     managed
   ].freeze
 
+  def self.targets(data)
+    platforms = data.fetch("platforms", %w[darwin linux])
+    valid = platforms.is_a?(Array) && !platforms.empty? && (platforms - %w[darwin linux]).empty?
+    raise ArgumentError, "platforms must contain darwin and/or linux" unless valid
+
+    TARGETS.select { |target| platforms.include?(target.split("-").first) }
+  end
+
+  def self.asset_name(data, version, target)
+    os, arch = target.split("-")
+    suffix = data.fetch("archive", false) ? ".tar.gz" : ""
+    template = data.fetch("asset_template", "#{data.fetch("asset_prefix")}-%{target}#{suffix}")
+    name = template % { version: version, target: target, os: os, arch: arch }
+    raise ArgumentError, "invalid asset filename: #{name}" unless name.match?(/\A[0-9A-Za-z][0-9A-Za-z._+-]*\z/)
+
+    name
+  end
+
+  def self.release_data(data, version)
+    updated = data.merge("version" => version)
+    updated.delete("revision") if data.fetch("version") != version
+    updated
+  end
+
   def self.brew_path(name)
     File.join(ROOT, "brews", "#{name}.json")
   end

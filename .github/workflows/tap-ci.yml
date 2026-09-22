@@ -23,6 +23,8 @@ jobs:
         run: |
           brew list ruby >/dev/null 2>&1 || brew install ruby
           echo "$(brew --prefix ruby)/bin" >> "$GITHUB_PATH"
+      - name: Test formula generation
+        run: ruby scripts/test-update-formula
       - name: Validate schema, generated docs, and release shape
         run: scripts/validate-tap --strict
       - name: Validate changed release files
