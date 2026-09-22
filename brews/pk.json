@@ -6,7 +6,7 @@
   "desc": "Safe-by-default local development process cleanup",
   "homepage": "https://github.com/yowainwright/pk",
   "license": "MIT",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "asset_prefix": "pk",
   "managed": true,
   "readme": false
