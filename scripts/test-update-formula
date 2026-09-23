@@ -1,0 +1,83 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+load File.expand_path("update-formula", __dir__)
+
+def assert_equal(expected, actual)
+  raise "expected #{expected.inspect}, got #{actual.inspect}" unless expected == actual
+end
+
+def assert_includes(text, value)
+  raise "missing #{value.inspect}" unless text.include?(value)
+end
+
+def assert_rejects
+  yield
+rescue ArgumentError, KeyError
+  return
+else
+  raise "invalid metadata was accepted"
+end
+
+def fixture_assets(data, version)
+  TapRelease.targets(data).to_h do |target|
+    [target, { "url" => asset_url(data, version, target), "sha256" => "a" * 64 }]
+  end
+end
+
+def test_default_release_assets
+  data = { "asset_prefix" => "example" }
+  assert_equal(TapRelease::TARGETS, TapRelease.targets(data))
+  assert_equal("example-linux-amd64", TapRelease.asset_name(data, "1.2.3", "linux-amd64"))
+  data["archive"] = true
+  assert_equal("example-darwin-arm64.tar.gz", TapRelease.asset_name(data, "1.2.3", "darwin-arm64"))
+end
+
+def test_diu_formula
+  data = read_package("diu").merge("version" => "0.2.3", "revision" => 1)
+  assert_equal(%w[darwin-arm64 darwin-amd64], TapRelease.targets(data))
+  assets = fixture_assets(data, "0.2.3")
+  formula = render_formula(data, "0.2.3", assets)
+  RubyVM::InstructionSequence.compile(formula)
+  %w[arm64 amd64].each do |arch|
+    assert_includes(formula, "https://github.com/yowainwright/diu/releases/download/v0.2.3/diu_0.2.3_darwin_#{arch}.tar.gz")
+  end
+  ['bin.install "diu"', 'pkgshare.install "LICENSE"', "revision 1", "depends_on :macos"].each do |value|
+    assert_includes(formula, value)
+  end
+  ["on_linux", 'depends_on "go"', 'system "go"', 'head "', '"LICENSES"'].each do |value|
+    raise "unexpected #{value}" if formula.include?(value)
+  end
+end
+
+def test_existing_formula_defaults
+  %w[pre shellcheck-legibility].each do |package|
+    data = read_package(package)
+    version = data.fetch("version")
+    formula = render_formula(data, version, fixture_assets(data, version))
+    RubyVM::InstructionSequence.compile(formula)
+    assert_includes(formula, "on_macos do")
+    assert_includes(formula, "on_linux do")
+    assert_equal(4, formula.scan(/sha256 /).length)
+    next unless data.fetch("archive", false)
+
+    assert_includes(formula, 'pkgshare.install "LICENSE", "LICENSES"')
+  end
+end
+
+def test_revision_and_platform_validation
+  data = { "version" => "0.2.3", "revision" => 1 }
+  assert_equal(1, TapRelease.release_data(data, "0.2.3").fetch("revision"))
+  assert_equal(false, TapRelease.release_data(data, "0.2.4").key?("revision"))
+  assert_equal("0.2.3", data.fetch("version"))
+  [[], ["windows"], "darwin"].each do |platforms|
+    assert_rejects { TapRelease.targets("platforms" => platforms) }
+  end
+  assert_rejects { TapRelease.asset_name({ "asset_prefix" => "../bad" }, "1.2.3", "darwin-arm64") }
+end
+
+test_default_release_assets
+test_diu_formula
+test_existing_formula_defaults
+test_revision_and_platform_validation
+puts "formula generation tests passed"

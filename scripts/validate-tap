@@ -33,6 +33,19 @@ def validate_package(path)
   fail_with "#{relative(path)} managed must be true or false" unless [true, false].include?(data.fetch("managed"))
   valid_archive = [true, false].include?(data.fetch("archive", false))
   fail_with "#{relative(path)} archive must be true or false" unless valid_archive
+  validate_release_options(data)
+rescue ArgumentError, KeyError, TypeError => error
+  fail_with "#{relative(path)}: #{error.message}"
+end
+
+def validate_release_options(data)
+  TapRelease.targets(data).each { |target| TapRelease.asset_name(data, data.fetch("version"), target) }
+  revision = data.fetch("revision", 0)
+  raise ArgumentError, "revision must be a nonnegative integer" unless revision.is_a?(Integer) && revision >= 0
+
+  files = data.fetch("archive_files", [])
+  valid_files = files.is_a?(Array) && files.all? { |name| name.is_a?(String) && name.match?(/\A[0-9A-Za-z._-]+\z/) && !%w[. ..].include?(name) }
+  raise ArgumentError, "archive_files must contain filenames" unless valid_files
 end
 
 def validate_ruby_syntax(path)

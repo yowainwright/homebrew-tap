@@ -5,7 +5,15 @@ class <%= class_name %> < Formula
   desc "<%= desc %>"
   homepage "<%= homepage %>"
   license "<%= license %>"
+<% if data.fetch("revision", 0).positive? -%>
+  revision <%= data.fetch("revision") %>
+<% end -%>
 
+<% unless assets.key?("linux-arm64") -%>
+  depends_on :macos
+
+<% end -%>
+<% if assets.key?("darwin-arm64") -%>
   on_macos do
     on_arm do
       url "<%= assets.fetch("darwin-arm64").fetch("url") %>"
@@ -18,6 +26,8 @@ class <%= class_name %> < Formula
     end
   end
 
+<% end -%>
+<% if assets.key?("linux-arm64") -%>
   on_linux do
     on_arm do
       url "<%= assets.fetch("linux-arm64").fetch("url") %>"
@@ -30,10 +40,14 @@ class <%= class_name %> < Formula
     end
   end
 
+<% end -%>
   def install
 <% if data.fetch("archive", false) -%>
     bin.install "<%= command %>"
-    pkgshare.install "LICENSE", "LICENSES"
+<% archive_files = data.fetch("archive_files", ["LICENSE", "LICENSES"]) -%>
+<% unless archive_files.empty? -%>
+    pkgshare.install <%= archive_files.map(&:dump).join(", ") %>
+<% end -%>
 <% else -%>
     bin.install Dir["<%= asset_prefix %>-*"].first => "<%= command %>"
 <% end -%>

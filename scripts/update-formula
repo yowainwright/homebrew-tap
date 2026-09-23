@@ -51,8 +51,7 @@ end
 
 def asset_url(data, version, target)
   tag = release_tag(data, version)
-  suffix = data.fetch("archive", false) ? ".tar.gz" : ""
-  asset = "#{data.fetch("asset_prefix")}-#{target}#{suffix}"
+  asset = TapRelease.asset_name(data, version, target)
   "https://github.com/#{data.fetch("repo")}/releases/download/#{tag}/#{asset}"
 end
 
@@ -99,25 +98,29 @@ def validate_tap
   abort "scripts/validate-tap failed"
 end
 
-package = ARGV.fetch(0) do
-  abort "usage: scripts/update-formula <package> [version]"
+def release_assets(data, version)
+  TapRelease.targets(data).to_h do |target|
+    url = asset_url(data, version, target)
+    [target, { "url" => url, "sha256" => fetch_sha256(url) }]
+  end
 end
 
-data = read_package(package)
-ensure_managed(data)
-version = ARGV[1] || data["version"]
-abort "missing version argument or package version" if version.to_s.empty?
-
-assets = TapRelease::TARGETS.to_h do |target|
-  url = asset_url(data, version, target)
-  [target, { "url" => url, "sha256" => fetch_sha256(url) }]
+def update_formula(package, requested_version)
+  data = read_package(package)
+  ensure_managed(data)
+  version = requested_version || data["version"]
+  abort "missing version argument or package version" if version.to_s.empty?
+  assets = release_assets(data, version)
+  data = TapRelease.release_data(data, version)
+  formula_path = File.join(repo_root, "Formula", "#{data.fetch("name")}.rb")
+  FileUtils.mkdir_p(File.dirname(formula_path))
+  File.write(formula_path, render_formula(data, version, assets))
+  write_package(data)
+  validate_tap
+  puts "updated Formula/#{data.fetch("name")}.rb"
 end
 
-data["version"] = version
-formula_path = File.join(repo_root, "Formula", "#{data.fetch("name")}.rb")
-FileUtils.mkdir_p(File.dirname(formula_path))
-File.write(formula_path, render_formula(data, version, assets))
-write_package(data)
-validate_tap
-
-puts "updated Formula/#{data.fetch("name")}.rb"
+if $PROGRAM_NAME == __FILE__
+  abort "usage: scripts/update-formula <package> [version]" unless (1..2).cover?(ARGV.length)
+  update_formula(ARGV[0], ARGV[1])
+end
