@@ -1,0 +1,134 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+usage() {
+  cat <<'USAGE'
+Usage: scripts/configure-package <package> --repo <owner/repo> \
+  --desc <description> --license <SPDX-license> --version <version> [options]
+
+Options:
+  --command <name>       Installed command (default: package)
+  --homepage <url>       Project homepage (default: GitHub repository)
+  --asset-prefix <name>  Release asset prefix (default: package)
+  --archive             Use .tar.gz assets instead of raw binaries
+  -h, --help            Show this help
+
+Creates brews/<package>.json with managed and readme set to false.
+Requires Ruby, like the existing formula scripts. Does not download assets.
+USAGE
+}
+
+fail() {
+  printf 'error: %s\n' "$*" >&2
+  exit 1
+}
+
+set_option() {
+  case "$1" in
+  --repo) repo="$2" ;;
+  --desc) desc="$2" ;;
+  --license) license="$2" ;;
+  --version) version="$2" ;;
+  --command) command_name="$2" ;;
+  --homepage) homepage="$2" ;;
+  --asset-prefix) asset_prefix="$2" ;;
+  *) fail "unknown option: $1" ;;
+  esac
+}
+
+parse_options() {
+  while (($#)); do
+    case "$1" in
+    -h | --help)
+      usage
+      exit 0
+      ;;
+    --archive)
+      archive=true
+      shift
+      ;;
+    --*)
+      [[ $# -ge 2 && -n "$2" && "$2" != --* ]] || fail "missing value for $1"
+      set_option "$1" "$2"
+      shift 2
+      ;;
+    *) fail "unexpected argument: $1" ;;
+    esac
+  done
+}
+
+validate_options() {
+  [[ "$package" =~ ^[a-z][a-z0-9]*(-[a-z0-9]+)*$ ]] || fail "package must use lowercase letters, digits, and single hyphens"
+  [[ "$repo" =~ ^[A-Za-z0-9][A-Za-z0-9-]*/[A-Za-z0-9][A-Za-z0-9._-]*$ ]] || fail "--repo must be owner/repo"
+  [[ -n "$desc" && -n "$license" && -n "$version" ]] || fail "--desc, --license, and --version are required"
+  [[ "$version" =~ ^[0-9][A-Za-z0-9.+-]*$ ]] || fail "--version must start with a digit; omit the v prefix"
+  [[ "$command_name" =~ ^[a-zA-Z0-9][a-zA-Z0-9._+-]*$ ]] || fail "invalid --command"
+  [[ "$asset_prefix" =~ ^[a-zA-Z0-9][a-zA-Z0-9._+-]*$ ]] || fail "invalid --asset-prefix"
+  [[ "$homepage" =~ ^https?://[^[:space:]]+$ ]] || fail "--homepage must be an HTTP(S) URL"
+  local value
+  for value in "$desc" "$license" "$homepage"; do
+    case "$value" in
+    *'"'* | *\\* | *'#{'* | *'#@'* | *'#$'* | *[$'\001'-$'\037'$'\177']*)
+      fail "description, license, and homepage must be single-line text without Ruby quotes, escapes, or interpolation"
+      ;;
+    esac
+  done
+}
+
+write_config() {
+  ruby -rjson - "$config_path" "$package" "$command_name" "$repo" "$desc" \
+    "$homepage" "$license" "$version" "$asset_prefix" "$archive" <<'RUBY'
+path, name, command, repo, desc, homepage, license, version, prefix, archive = ARGV
+class_name = name.split("-").map(&:capitalize).join
+data = {
+  "name" => name, "class_name" => class_name, "command" => command,
+  "repo" => repo, "desc" => desc, "homepage" => homepage,
+  "license" => license, "version" => version, "asset_prefix" => prefix,
+  "managed" => false, "readme" => false
+}
+data["archive"] = true if archive == "true"
+File.open(path, File::WRONLY | File::CREAT | File::EXCL) do |file|
+  file.write("#{JSON.pretty_generate(data)}\n")
+end
+RUBY
+}
+
+print_commands() {
+  printf 'Created brews/%s.json (managed: false).\n\n' "$package"
+  printf 'After verifying all four release assets and matching --version output,\n'
+  printf 'set managed to true in brews/%s.json. Then run from the tap root:\n\n' "$package"
+  printf '  scripts/new-formula %s\n' "$package"
+  printf '  scripts/validate-tap --strict\n'
+  printf '  brew style Formula/%s.rb\n' "$package"
+  printf '  brew audit --strict yowainwright/tap/%s\n' "$package"
+  printf '  brew install yowainwright/tap/%s\n' "$package"
+  printf '  brew test yowainwright/tap/%s\n' "$package"
+  printf '\nFuture releases: scripts/update-formula %s <version>\n' "$package"
+}
+
+[[ $# -gt 0 ]] || {
+  usage >&2
+  exit 1
+}
+case "$1" in -h | --help)
+  usage
+  exit 0
+  ;;
+esac
+package="$1"
+shift
+repo='' desc='' license='' version='' command_name='' homepage='' asset_prefix='' archive=false
+parse_options "$@"
+command_name="${command_name:-$package}"
+homepage="${homepage:-https://github.com/$repo}"
+asset_prefix="${asset_prefix:-$package}"
+validate_options
+command -v ruby >/dev/null || fail "Ruby is required by the tap scripts"
+repo_root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
+config_path="$repo_root/brews/$package.json"
+formula_path="$repo_root/Formula/$package.rb"
+[[ -d "$repo_root/brews" ]] || fail "missing brews directory"
+[[ ! -e "$config_path" && ! -L "$config_path" ]] || fail "brews/$package.json already exists"
+[[ ! -e "$formula_path" && ! -L "$formula_path" ]] || fail "Formula/$package.rb already exists; use scripts/update-formula"
+write_config
+print_commands

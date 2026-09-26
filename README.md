@@ -186,6 +186,36 @@ brew update
 brew upgrade
 ```
 
+## Configure a new package
+
+From this checkout, create the package inventory entry with Bash and Ruby:
+
+```bash
+scripts/configure-package example-tool \
+  --repo yowainwright/example-tool \
+  --desc "Example command-line tool" \
+  --license MIT \
+  --version 1.2.3
+```
+
+Use `--help` for command, homepage, asset-prefix, and archive options. Package
+names use lowercase letters, digits, and single hyphens, starting with a letter.
+Versions omit the `v` tag prefix. The command refuses existing inventory or formula
+files and creates `brews/<package>.json` with `managed: false` and `readme: false`.
+
+The default release assets are `<package>-darwin-arm64`, `<package>-darwin-amd64`,
+`<package>-linux-arm64`, and `<package>-linux-amd64` under the upstream `v<version>`
+tag. `--archive` adds `.tar.gz`; archives must contain the command, `LICENSE`, and
+`LICENSES`, as expected by the shared formula template.
+
+Verify that all four assets are published and the command's `--version` output
+matches the package version before setting `managed: true`. The setup command
+prints the existing generation, validation, and Homebrew test commands to run.
+It does not download assets or generate a formula. Add the README package section
+and set `readme: true` when ready to list it.
+
+Run the setup tests with `bash scripts/test-configure-package`.
+
 ## Issues
 
 - **Formula issues**: [Open an issue here](https://github.com/yowainwright/homebrew-tap/issues)

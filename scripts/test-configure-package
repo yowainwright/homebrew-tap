@@ -1,0 +1,93 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+repo_root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
+fixture="$(mktemp -d "$repo_root/scripts/.configure-package-test.XXXXXX")"
+trap 'rm -rf -- "$fixture"' EXIT
+mkdir "$fixture/scripts" "$fixture/brews" "$fixture/Formula"
+cp "$repo_root/scripts/configure-package" "$fixture/scripts/"
+script="$fixture/scripts/configure-package"
+defaults=(--repo example/example --desc "Example developer's tool" --license MIT --version 1.2.3)
+
+fail() {
+  printf 'FAIL: %s\n' "$*" >&2
+  exit 1
+}
+
+reject() {
+  local expected="$1"
+  shift
+  if bash "$script" "$@" >"$fixture/output" 2>&1; then
+    fail "unexpected success: $*"
+  fi
+  grep -Fq -- "$expected" "$fixture/output" || fail "missing error: $expected"
+}
+
+test_defaults() {
+  (cd "$fixture" && bash "$script" example-tool "${defaults[@]}") >"$fixture/output"
+  ruby -rjson - "$fixture/brews/example-tool.json" <<'RUBY'
+data = JSON.parse(File.read(ARGV.fetch(0)))
+expected = {
+  "name" => "example-tool", "class_name" => "ExampleTool", "command" => "example-tool",
+  "repo" => "example/example", "desc" => "Example developer's tool",
+  "homepage" => "https://github.com/example/example", "license" => "MIT",
+  "version" => "1.2.3", "asset_prefix" => "example-tool", "managed" => false, "readme" => false
+}
+abort "unexpected default configuration: #{data}" unless data == expected
+RUBY
+  grep -Fq 'scripts/new-formula example-tool' "$fixture/output" || fail 'missing generation command'
+  grep -Fq 'scripts/validate-tap --strict' "$fixture/output" || fail 'missing validation command'
+  grep -Fq 'brew test yowainwright/tap/example-tool' "$fixture/output" || fail 'missing test command'
+  [[ ! -e "$fixture/Formula/example-tool.rb" ]] || fail 'generated a formula during setup'
+}
+
+test_options() {
+  bash "$script" custom-tool "${defaults[@]}" --command custom --asset-prefix custom-bin \
+    --homepage https://example.com/tool --archive >"$fixture/output"
+  ruby -rjson - "$fixture/brews/custom-tool.json" <<'RUBY'
+data = JSON.parse(File.read(ARGV.fetch(0)))
+expected = { "command" => "custom", "asset_prefix" => "custom-bin",
+             "homepage" => "https://example.com/tool", "archive" => true }
+expected.each { |key, value| abort "unexpected #{key}" unless data.fetch(key) == value }
+RUBY
+}
+
+test_existing_files() {
+  cp "$fixture/brews/example-tool.json" "$fixture/original.json"
+  reject 'already exists' example-tool "${defaults[@]}"
+  cmp "$fixture/original.json" "$fixture/brews/example-tool.json" || fail 'overwrote configuration'
+  printf 'existing formula\n' >"$fixture/Formula/existing.rb"
+  reject 'use scripts/update-formula' existing "${defaults[@]}"
+  [[ ! -e "$fixture/brews/existing.json" ]] || fail 'created config for existing formula'
+  ln -s "$fixture/missing" "$fixture/brews/linked.json"
+  reject 'already exists' linked "${defaults[@]}"
+  [[ -L "$fixture/brews/linked.json" && ! -e "$fixture/missing" ]] || fail 'followed symlink'
+}
+
+test_invalid_arguments() {
+  reject 'Usage:'
+  reject 'package must' ../escape "${defaults[@]}"
+  reject 'package must' example_tool "${defaults[@]}"
+  reject 'owner/repo' invalid "${defaults[@]}" --repo https://github.com/example/example
+  reject 'required' invalid --repo example/example
+  reject 'missing value' invalid "${defaults[@]}" --desc
+  reject 'missing value' invalid "${defaults[@]}" --license ''
+  reject 'unknown option' invalid "${defaults[@]}" --unknown value
+  reject 'unexpected argument' invalid "${defaults[@]}" extra
+  reject 'omit the v prefix' invalid "${defaults[@]}" --version v1.2.3
+  reject 'invalid --command' invalid "${defaults[@]}" --command '../escape'
+  reject 'invalid --asset-prefix' invalid "${defaults[@]}" --asset-prefix '../escape'
+  reject 'HTTP(S)' invalid "${defaults[@]}" --homepage file:///example
+  reject 'single-line text' invalid "${defaults[@]}" --desc 'Bad "description"'
+  reject 'single-line text' invalid "${defaults[@]}" --desc '#{1 + 1}'
+  reject 'single-line text' invalid "${defaults[@]}" --desc $'two\nlines'
+  [[ ! -e "$fixture/brews/invalid.json" && ! -e "$fixture/escape.json" ]] || fail 'invalid input wrote configuration'
+}
+
+bash "$script" --help >"$fixture/output"
+grep -Fq 'Usage:' "$fixture/output" || fail 'missing help'
+test_defaults
+test_options
+test_existing_files
+test_invalid_arguments
+printf 'package configuration tests passed\n'
