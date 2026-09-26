@@ -68,7 +68,7 @@ validate_options() {
   local value
   for value in "$desc" "$license" "$homepage"; do
     case "$value" in
-    *'"'* | *\\* | *'#{'* | *'#@'* | *'#$'* | *[$'\001'-$'\037'$'\177']*)
+    *'"'* | *\\* | *'#{'* | *'#@'* | *'#$'* | *[[:cntrl:]]*)
       fail "description, license, and homepage must be single-line text without Ruby quotes, escapes, or interpolation"
       ;;
     esac

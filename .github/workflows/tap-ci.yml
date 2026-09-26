@@ -26,7 +26,9 @@ jobs:
       - name: Test formula generation
         run: ruby scripts/test-update-formula
       - name: Test package configuration
-        run: bash scripts/test-configure-package
+        run: |
+          LC_ALL=C /bin/bash scripts/test-configure-package
+          LC_ALL=en_US.UTF-8 /bin/bash scripts/test-configure-package
       - name: Validate schema, generated docs, and release shape
         run: scripts/validate-tap --strict
       - name: Validate changed release files

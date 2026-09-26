@@ -17,14 +17,14 @@ fail() {
 reject() {
   local expected="$1"
   shift
-  if bash "$script" "$@" >"$fixture/output" 2>&1; then
+  if "$BASH" "$script" "$@" >"$fixture/output" 2>&1; then
     fail "unexpected success: $*"
   fi
   grep -Fq -- "$expected" "$fixture/output" || fail "missing error: $expected"
 }
 
 test_defaults() {
-  (cd "$fixture" && bash "$script" example-tool "${defaults[@]}") >"$fixture/output"
+  (cd "$fixture" && "$BASH" "$script" example-tool "${defaults[@]}") >"$fixture/output"
   ruby -rjson - "$fixture/brews/example-tool.json" <<'RUBY'
 data = JSON.parse(File.read(ARGV.fetch(0)))
 expected = {
@@ -42,7 +42,7 @@ RUBY
 }
 
 test_options() {
-  bash "$script" custom-tool "${defaults[@]}" --command custom --asset-prefix custom-bin \
+  "$BASH" "$script" custom-tool "${defaults[@]}" --command custom --asset-prefix custom-bin \
     --homepage https://example.com/tool --archive >"$fixture/output"
   ruby -rjson - "$fixture/brews/custom-tool.json" <<'RUBY'
 data = JSON.parse(File.read(ARGV.fetch(0)))
@@ -84,10 +84,25 @@ test_invalid_arguments() {
   [[ ! -e "$fixture/brews/invalid.json" && ! -e "$fixture/escape.json" ]] || fail 'invalid input wrote configuration'
 }
 
-bash "$script" --help >"$fixture/output"
+test_control_characters() {
+  local option control expected
+  for option in --desc --license --homepage; do
+    for control in $'\001' $'\t' $'\n' $'\r' $'\037' $'\177'; do
+      expected='single-line text'
+      case "$option:$control" in
+      --homepage:[$'\t\n\r']) expected='HTTP(S)' ;;
+      esac
+      reject "$expected" invalid "${defaults[@]}" "$option" "https://example.com/a${control}b"
+    done
+  done
+  [[ ! -e "$fixture/brews/invalid.json" ]] || fail 'control character input wrote configuration'
+}
+
+"$BASH" "$script" --help >"$fixture/output"
 grep -Fq 'Usage:' "$fixture/output" || fail 'missing help'
 test_defaults
 test_options
 test_existing_files
 test_invalid_arguments
+test_control_characters
 printf 'package configuration tests passed\n'
