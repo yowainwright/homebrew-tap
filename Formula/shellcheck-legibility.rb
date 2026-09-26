@@ -8,25 +8,25 @@ class ShellcheckLegibility < Formula
 
   on_macos do
     on_arm do
-      url "https://github.com/yowainwright/shellcheck_legibility/releases/download/v0.2.3/shellcheck-legibility-darwin-arm64.tar.gz"
-      sha256 "161c38c8c78ab8e8af4bfb0667b02cb78d09bfe999f4b70c6f512b8e989f8b09"
+      url "https://github.com/yowainwright/shellcheck_legibility/releases/download/v0.3.0/shellcheck-legibility-darwin-arm64.tar.gz"
+      sha256 "3362af21d120193a3a8ecf30c36d7116f4b8bd5f4c6abd44e5e61e355df083f5"
     end
 
     on_intel do
-      url "https://github.com/yowainwright/shellcheck_legibility/releases/download/v0.2.3/shellcheck-legibility-darwin-amd64.tar.gz"
-      sha256 "161c38c8c78ab8e8af4bfb0667b02cb78d09bfe999f4b70c6f512b8e989f8b09"
+      url "https://github.com/yowainwright/shellcheck_legibility/releases/download/v0.3.0/shellcheck-legibility-darwin-amd64.tar.gz"
+      sha256 "521b94af5887e72474b18df61ade11bb7f6cc9167696b895052d2203e51285cb"
     end
   end
 
   on_linux do
     on_arm do
-      url "https://github.com/yowainwright/shellcheck_legibility/releases/download/v0.2.3/shellcheck-legibility-linux-arm64.tar.gz"
-      sha256 "161c38c8c78ab8e8af4bfb0667b02cb78d09bfe999f4b70c6f512b8e989f8b09"
+      url "https://github.com/yowainwright/shellcheck_legibility/releases/download/v0.3.0/shellcheck-legibility-linux-arm64.tar.gz"
+      sha256 "567a5d54912cc7fa5c9f4dc72e34c5ec88d562b8e7eef0cce2ac7e1c38470725"
     end
 
     on_intel do
-      url "https://github.com/yowainwright/shellcheck_legibility/releases/download/v0.2.3/shellcheck-legibility-linux-amd64.tar.gz"
-      sha256 "161c38c8c78ab8e8af4bfb0667b02cb78d09bfe999f4b70c6f512b8e989f8b09"
+      url "https://github.com/yowainwright/shellcheck_legibility/releases/download/v0.3.0/shellcheck-legibility-linux-amd64.tar.gz"
+      sha256 "a8b7888e00627dc88dc902cdfeab13195a7d7b1e6420a27e49d7cdb5a8f6c368"
     end
   end
 
