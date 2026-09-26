@@ -6,7 +6,7 @@
   "desc": "Security proxy for package managers",
   "homepage": "https://github.com/yowainwright/pre",
   "license": "MIT",
-  "version": "0.6.1",
+  "version": "0.6.2",
   "asset_prefix": "pre",
   "managed": true,
   "readme": true
