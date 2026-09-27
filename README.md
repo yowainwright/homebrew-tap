@@ -186,6 +186,52 @@ brew update
 brew upgrade
 ```
 
+## Configure a new package
+
+Run guided setup from this checkout (requires Bash and Ruby):
+
+```bash
+scripts/configure-package
+```
+
+Each question has a matching flag. Supply any flags to skip those questions;
+press Enter to accept an offered default. For example:
+
+```bash
+scripts/configure-package example-tool \
+  --repo yowainwright/example-tool \
+  --desc "Example command-line tool" \
+  --license MIT \
+  --version 1.2.3
+```
+
+Use `--name` instead of the positional package name if preferred. `--archive`
+selects `.tar.gz` assets; `--no-archive` selects raw binaries. `--help` lists all
+flags. Without a terminal, required values must be supplied as flags and optional
+values use their defaults.
+
+Package names use lowercase letters, digits, and single hyphens, starting with a letter.
+Versions omit the `v` tag prefix. The command refuses existing inventory or formula
+files and creates `brews/<package>.json` with `managed: false` and `readme: false`.
+
+The default release assets are `<package>-darwin-arm64`, `<package>-darwin-amd64`,
+`<package>-linux-arm64`, and `<package>-linux-amd64` under the upstream `v<version>`
+tag. `--archive` adds `.tar.gz`; archives must contain the command, `LICENSE`, and
+`LICENSES`, as expected by the shared formula template.
+
+Verify that all four assets are published and the command's `--version` output
+matches the package version before setting `managed: true`. The setup command
+prints the existing generation, validation, and Homebrew test commands to run.
+These commands link this checkout into Homebrew's tap directory before generating
+the formula. They stop if `yowainwright/tap` already points at another checkout;
+use that checkout or resolve the existing tap location first. The link lets
+Homebrew see newly generated files before they are committed.
+It does not download assets or generate a formula. Add the README package section
+and set `readme: true` when ready to list it. With `--command`, use the package
+name in `brew install` and the command name for the heading and usage examples.
+
+Run the setup tests with `bash scripts/test-configure-package`.
+
 ## Issues
 
 - **Formula issues**: [Open an issue here](https://github.com/yowainwright/homebrew-tap/issues)

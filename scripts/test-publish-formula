@@ -1,0 +1,54 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+load File.expand_path("publish-formula", __dir__)
+
+def release_fixture(template, tag)
+  data = { "managed" => true, "repo" => ENV.fetch("SOURCE_REPOSITORY", "example/tool") }
+  data["tag_template"] = template if template
+  original_read = TapRelease.method(:read_brew)
+  TapRelease.define_singleton_method(:read_brew) { |_path| data }
+  HomebrewRelease.new("example-tool", tag)
+ensure
+  TapRelease.define_singleton_method(:read_brew, original_read)
+end
+
+def assert_release_tag(template, tag)
+  release = release_fixture(template, tag)
+  parsed = release.instance_variable_get(:@version)
+  raise "expected version 1.2.3, got #{parsed}" unless parsed == Gem::Version.new("1.2.3")
+  raise "tag did not round-trip: #{tag}" unless release.release_tag(parsed) == tag
+end
+
+def assert_rejected_tag(template, tag)
+  release_fixture(template, tag)
+rescue RuntimeError => error
+  expected = /Tag does not match package metadata|Expected a stable MAJOR.MINOR.PATCH version/
+  raise unless error.message.match?(expected)
+else
+  raise "invalid tag accepted: #{tag} with #{template.inspect}"
+end
+
+[
+  [nil, "v1.2.3"],
+  ["%{version}", "1.2.3"],
+  ["release-%{version}", "release-1.2.3"],
+  ["tool-v%{version}-stable", "tool-v1.2.3-stable"],
+  ["tool.v%{version}+stable", "tool.v1.2.3+stable"],
+  ["release-%%-%{version}", "release-%-1.2.3"],
+  ["release-%<version>s", "release-1.2.3"],
+  ["v%{version}/%{version}", "v1.2.3/1.2.3"]
+].each { |template, tag| assert_release_tag(template, tag) }
+
+[
+  [nil, "release-1.2.3"],
+  ["release-%{version}", "v1.2.3"],
+  ["release-%{version}", "release-1.2.3-rc.1"],
+  ["release-%{version}", "release-01.2.3"],
+  ["tool.v%{version}+stable", "toolXv1.2.3+stable"],
+  ["tool-v%{version}-stable", "tool-v1.2.3"],
+  ["v%{version}/%{version}", "v1.2.3/4.5.6"],
+  ["release", "release"]
+].each { |template, tag| assert_rejected_tag(template, tag) }
+
+puts "publication tag tests passed (16 cases)"
