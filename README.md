@@ -71,24 +71,6 @@ es-check --help
 
 ---
 
-### [fjsf](https://github.com/yowainwright/fjsf)
-
-A CLI tool for fuzzy searching and running scripts defined in JSON, TOML, and YAML config files.
-
-Install [fjsf](Formula/fjsf.rb) | `Formula/fjsf.rb`
-
-```bash
-brew install yowainwright/tap/fjsf
-```
-
-Usage
-
-```bash
-fjsf
-```
-
----
-
 ### [pastoralist](https://jeffry.in/pastoralist/)
 
 Audit, secure, and clean up package manager overrides
@@ -173,6 +155,24 @@ Usage
 
 ```bash
 src-lint check . --strict
+```
+
+---
+
+### [shellcheck-legibility](https://github.com/yowainwright/shellcheck_legibility)
+
+Shell legibility checks that sit beside ShellCheck.
+
+Install [shellcheck-legibility](Formula/shellcheck-legibility.rb) | `Formula/shellcheck-legibility.rb`
+
+```bash
+brew install yowainwright/tap/shellcheck-legibility
+```
+
+Usage
+
+```bash
+shellcheck-legibility check .
 ```
 
 ---
