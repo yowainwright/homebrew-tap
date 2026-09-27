@@ -9,6 +9,9 @@ on:
       tag:
         required: true
         type: string
+      preflight_only:
+        type: boolean
+        default: false
     secrets:
       tap_token:
         required: true
@@ -36,6 +39,7 @@ jobs:
           gh api repos/yowainwright/homebrew-tap --jq '.permissions.push' | grep -qx true
 
       - name: Checkout Homebrew tap
+        if: ${{ !inputs.preflight_only }}
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           repository: yowainwright/homebrew-tap
@@ -44,16 +48,18 @@ jobs:
           persist-credentials: false
 
       - name: Set up tap Ruby
+        if: ${{ !inputs.preflight_only }}
         run: |
           brew list ruby >/dev/null 2>&1 || brew install ruby
           echo "$(brew --prefix ruby)/bin" >> "$GITHUB_PATH"
 
       - name: Prepare latest formula update
+        if: ${{ !inputs.preflight_only }}
         id: prepare
         run: ruby scripts/publish-formula prepare "$PACKAGE" "$RELEASE_TAG"
 
       - name: Open formula pull request
-        if: steps.prepare.outputs.update == 'true'
+        if: ${{ !inputs.preflight_only && steps.prepare.outputs.update == 'true' }}
         id: tap
         uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1
         with:
@@ -71,6 +77,7 @@ jobs:
             Release: https://github.com/${{ steps.prepare.outputs.upstream }}/releases/tag/${{ steps.prepare.outputs.tag }}
 
       - name: Complete and verify publication
+        if: ${{ !inputs.preflight_only }}
         env:
           TARGET_TAG: ${{ steps.prepare.outputs.tag }}
           TAP_PR: ${{ steps.tap.outputs.pull-request-number }}

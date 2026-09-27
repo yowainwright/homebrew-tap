@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
+# Flag-only tests must behave consistently when launched from a terminal.
+exec </dev/null
 
 repo_root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
 fixture="$(mktemp -d "$repo_root/scripts/.configure-package-test.XXXXXX")"
@@ -69,7 +71,7 @@ test_existing_files() {
 }
 
 test_invalid_arguments() {
-  reject 'Usage:'
+  reject 'missing required --name'
   reject 'package must' ../escape "${defaults[@]}"
   reject 'package must' example_tool "${defaults[@]}"
   reject 'owner/repo' invalid "${defaults[@]}" --repo https://github.com/example/example
@@ -109,4 +111,5 @@ test_options
 test_existing_files
 test_invalid_arguments
 test_control_characters
+ruby "$repo_root/scripts/test-configure-package-prompts" "$BASH" "$script"
 printf 'package configuration tests passed\n'

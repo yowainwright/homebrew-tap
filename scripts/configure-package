@@ -3,18 +3,26 @@ set -euo pipefail
 
 usage() {
   cat <<'USAGE'
-Usage: scripts/configure-package <package> --repo <owner/repo> \
-  --desc <description> --license <SPDX-license> --version <version> [options]
+Usage: scripts/configure-package [package] [options]
+
+Run without options for guided setup. Each flag skips its matching question.
 
 Options:
+  --name <package>       Package name (or use the positional argument)
+  --repo <owner/repo>     GitHub repository
+  --desc <description>   Short description
+  --license <license>    SPDX license identifier
+  --version <version>    Release version, without the v prefix
   --command <name>       Installed command (default: package)
   --homepage <url>       Project homepage (default: GitHub repository)
   --asset-prefix <name>  Release asset prefix (default: package)
   --archive             Use .tar.gz assets instead of raw binaries
-  -h, --help            Show this help
+  --no-archive           Use raw binaries (default)
+  -h, --help             Show this help
 
 Creates brews/<package>.json with managed and readme set to false.
 Requires Ruby, like the existing formula scripts. Does not download assets.
+Without a terminal, supply required flags; optional values use their defaults.
 USAGE
 }
 
@@ -25,6 +33,7 @@ fail() {
 
 set_option() {
   case "$1" in
+  --name) package="$2" ;;
   --repo) repo="$2" ;;
   --desc) desc="$2" ;;
   --license) license="$2" ;;
@@ -32,7 +41,16 @@ set_option() {
   --command) command_name="$2" ;;
   --homepage) homepage="$2" ;;
   --asset-prefix) asset_prefix="$2" ;;
+  --archive) set_archive "$2" ;;
   *) fail "unknown option: $1" ;;
+  esac
+}
+
+set_archive() {
+  case "$1" in
+  y | Y | yes | Yes | YES | true) archive=true ;;
+  n | N | no | No | NO | false) archive=false ;;
+  *) fail 'archive choice must be yes or no' ;;
   esac
 }
 
@@ -43,8 +61,9 @@ parse_options() {
       usage
       exit 0
       ;;
-    --archive)
-      archive=true
+    --archive | --no-archive)
+      archive=false
+      [[ "$1" != --archive ]] || archive=true
       shift
       ;;
     --*)
@@ -52,12 +71,48 @@ parse_options() {
       set_option "$1" "$2"
       shift 2
       ;;
-    *) fail "unexpected argument: $1" ;;
+    *)
+      [[ -z "$package" && "$1" != -* ]] || fail "unexpected argument: $1"
+      package="$1"
+      shift
+      ;;
     esac
   done
 }
 
+prompt_option() {
+  local option="$1" label="$2" current="$3" default="${4:-}" answer=''
+  [[ -z "$current" ]] || return 0
+  if [[ ! -t 0 ]]; then
+    [[ -n "$default" ]] || fail "missing required $option; supply its flag when no terminal is available"
+    set_option "$option" "$default"
+    return
+  fi
+  while [[ -z "$answer" ]]; do
+    printf '%s' "$label" >&2
+    [[ -z "$default" ]] || printf ' [%s]' "$default" >&2
+    printf ': ' >&2
+    IFS= read -r answer || fail 'setup cancelled; no configuration written'
+    answer="${answer:-$default}"
+    [[ -n "$answer" ]] || printf 'A value is required.\n' >&2
+  done
+  set_option "$option" "$answer"
+}
+
+collect_options() {
+  prompt_option --name 'Package name (--name)' "$package"
+  prompt_option --repo 'GitHub owner/repo (--repo)' "$repo"
+  prompt_option --desc 'Description (--desc)' "$desc"
+  prompt_option --license 'SPDX license (--license)' "$license"
+  prompt_option --version 'Version without v (--version)' "$version"
+  prompt_option --command 'Installed command (--command)' "$command_name" "$package"
+  prompt_option --homepage 'Homepage (--homepage)' "$homepage" "https://github.com/$repo"
+  prompt_option --asset-prefix 'Asset prefix (--asset-prefix)' "$asset_prefix" "$package"
+  prompt_option --archive 'Use .tar.gz archives? (--archive/--no-archive)' "$archive" no
+}
+
 validate_options() {
+  [[ "$archive" == true || "$archive" == false ]] || fail 'archive choice must be true or false'
   [[ "$package" =~ ^[a-z][a-z0-9]*(-[a-z0-9]+)*$ ]] || fail "package must use lowercase letters, digits, and single hyphens"
   [[ "$repo" =~ ^[A-Za-z0-9][A-Za-z0-9-]*/[A-Za-z0-9][A-Za-z0-9._-]*$ ]] || fail "--repo must be owner/repo"
   [[ -n "$desc" && -n "$license" && -n "$version" ]] || fail "--desc, --license, and --version are required"
@@ -123,22 +178,9 @@ print_commands() {
   printf '\nFuture releases: scripts/update-formula %s <version>\n' "$package"
 }
 
-[[ $# -gt 0 ]] || {
-  usage >&2
-  exit 1
-}
-case "$1" in -h | --help)
-  usage
-  exit 0
-  ;;
-esac
-package="$1"
-shift
-repo='' desc='' license='' version='' command_name='' homepage='' asset_prefix='' archive=false
+package='' repo='' desc='' license='' version='' command_name='' homepage='' asset_prefix='' archive=''
 parse_options "$@"
-command_name="${command_name:-$package}"
-homepage="${homepage:-https://github.com/$repo}"
-asset_prefix="${asset_prefix:-$package}"
+collect_options
 validate_options
 command -v ruby >/dev/null || fail "Ruby is required by the tap scripts"
 repo_root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"

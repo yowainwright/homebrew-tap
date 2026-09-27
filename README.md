@@ -188,7 +188,14 @@ brew upgrade
 
 ## Configure a new package
 
-From this checkout, create the package inventory entry with Bash and Ruby:
+Run guided setup from this checkout (requires Bash and Ruby):
+
+```bash
+scripts/configure-package
+```
+
+Each question has a matching flag. Supply any flags to skip those questions;
+press Enter to accept an offered default. For example:
 
 ```bash
 scripts/configure-package example-tool \
@@ -198,8 +205,12 @@ scripts/configure-package example-tool \
   --version 1.2.3
 ```
 
-Use `--help` for command, homepage, asset-prefix, and archive options. Package
-names use lowercase letters, digits, and single hyphens, starting with a letter.
+Use `--name` instead of the positional package name if preferred. `--archive`
+selects `.tar.gz` assets; `--no-archive` selects raw binaries. `--help` lists all
+flags. Without a terminal, required values must be supplied as flags and optional
+values use their defaults.
+
+Package names use lowercase letters, digits, and single hyphens, starting with a letter.
 Versions omit the `v` tag prefix. The command refuses existing inventory or formula
 files and creates `brews/<package>.json` with `managed: false` and `readme: false`.
 

@@ -24,12 +24,21 @@ class HomebrewRelease
     @upstream = @data.fetch("repo")
     raise "Caller does not own this package" unless ENV.fetch("SOURCE_REPOSITORY", @upstream) == @upstream
 
-    @version = version(tag.delete_prefix("v"))
+    @version = version_from_tag(tag)
     raise "Tag does not match package metadata" unless tag == release_tag(@version)
   end
 
   def release_tag(target)
     @data.fetch("tag_template", "v%{version}") % { version: target.to_s }
+  end
+
+  def version_from_tag(tag)
+    placeholder = "%{version}"
+    pattern = Regexp.escape(release_tag(placeholder)).gsub(Regexp.escape(placeholder), "(.+)")
+    match = /\A#{pattern}\z/.match(tag)
+    raise "Tag does not match package metadata" unless match && match[1]
+
+    version(match[1])
   end
 
   def version(value)

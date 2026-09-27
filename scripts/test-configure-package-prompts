@@ -1,0 +1,94 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require "json"
+require "pty"
+require "timeout"
+
+BASH, SCRIPT = ARGV
+abort "usage: test-configure-package-prompts BASH FIXTURE_SCRIPT" unless BASH && SCRIPT
+
+def read_prompt(reader, transcript, prompt)
+  transcript << reader.readpartial(1024) until transcript.include?(prompt)
+end
+
+def read_remaining(reader, transcript)
+  loop { transcript << reader.readpartial(1024) }
+rescue EOFError, Errno::EIO
+  transcript
+end
+
+def run_setup(arguments, answers)
+  transcript = +""
+  status = nil
+  PTY.spawn(BASH, SCRIPT, *arguments) do |reader, writer, pid|
+    Timeout.timeout(10) do
+      answers.each do |prompt, answer|
+        read_prompt(reader, transcript, prompt)
+        writer.write("#{answer}\n")
+        writer.flush
+      end
+      read_remaining(reader, transcript)
+      _, status = Process.wait2(pid)
+    end
+  ensure
+    Process.kill("TERM", pid) unless status
+  end
+  raise "setup failed: #{transcript}" unless status.success?
+
+  transcript
+end
+
+def read_config(name)
+  path = File.join(File.dirname(SCRIPT), "..", "brews", "#{name}.json")
+  JSON.parse(File.read(path))
+end
+
+def assert_fields(name, expected)
+  data = read_config(name)
+  expected.each do |key, value|
+    raise "#{name}: expected #{key}=#{value.inspect}, got #{data[key].inspect}" unless data[key] == value
+  end
+end
+
+def test_guided_setup
+  answers = [
+    ["Package name (--name): ", "guided-tool"],
+    ["GitHub owner/repo (--repo): ", "example/guided-tool"],
+    ["Description (--desc): ", "Guided tool"],
+    ["SPDX license (--license): ", "MIT"],
+    ["Version without v (--version): ", "1.2.3"],
+    ["Installed command (--command) [guided-tool]: ", ""],
+    ["Homepage (--homepage) [https://github.com/example/guided-tool]: ", ""],
+    ["Asset prefix (--asset-prefix) [guided-tool]: ", ""],
+    ["Use .tar.gz archives? (--archive/--no-archive) [no]: ", "yes"]
+  ]
+  run_setup([], answers)
+  assert_fields("guided-tool", "command" => "guided-tool", "asset_prefix" => "guided-tool",
+                              "homepage" => "https://github.com/example/guided-tool", "archive" => true,
+                              "managed" => false, "readme" => false)
+end
+
+def test_flags_skip_questions
+  arguments = %w[--name flag-tool --repo example/flag-tool --license MIT --version 1.2.3
+                 --command flag --homepage https://example.com --asset-prefix flag --no-archive]
+  output = run_setup(arguments, [["Description (--desc): ", "Flag tool"]])
+  raise "flags did not skip their prompts" if output.include?("Package name (--name):")
+  assert_fields("flag-tool", "desc" => "Flag tool", "command" => "flag",
+                            "homepage" => "https://example.com", "asset_prefix" => "flag")
+  raise "--no-archive was ignored" if read_config("flag-tool").fetch("archive", false)
+end
+
+def test_all_flags
+  arguments = %w[--name complete-tool --repo example/complete-tool --desc Complete --license MIT
+                 --version 1.2.3 --command complete --homepage https://example.com
+                 --asset-prefix complete --archive]
+  output = run_setup(arguments, [])
+  raise "unexpected prompt" if output.include?("(--")
+  assert_fields("complete-tool", "archive" => true, "command" => "complete")
+end
+
+test_guided_setup
+test_flags_skip_questions
+test_all_flags
+puts "interactive package configuration tests passed"

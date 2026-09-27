@@ -25,6 +25,8 @@ jobs:
           echo "$(brew --prefix ruby)/bin" >> "$GITHUB_PATH"
       - name: Test formula generation
         run: ruby scripts/test-update-formula
+      - name: Test publication tags
+        run: ruby scripts/test-publish-formula
       - name: Test README package names
         run: ruby scripts/test-validate-tap
       - name: Test package configuration
