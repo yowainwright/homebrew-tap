@@ -1,0 +1,77 @@
+name: Publish Homebrew formula
+
+on:
+  workflow_call:
+    inputs:
+      package:
+        required: true
+        type: string
+      tag:
+        required: true
+        type: string
+    secrets:
+      tap_token:
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    runs-on: macos-latest
+    timeout-minutes: 40
+    concurrency:
+      group: homebrew-${{ inputs.package }}
+      cancel-in-progress: false
+      queue: max
+    env:
+      PACKAGE: ${{ inputs.package }}
+      RELEASE_TAG: ${{ inputs.tag }}
+      SOURCE_REPOSITORY: ${{ github.repository }}
+      GH_TOKEN: ${{ secrets.tap_token }}
+    steps:
+      - name: Verify tap access
+        run: |
+          test -n "$GH_TOKEN"
+          gh api repos/yowainwright/homebrew-tap --jq '.permissions.push' | grep -qx true
+
+      - name: Checkout Homebrew tap
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          repository: yowainwright/homebrew-tap
+          token: ${{ secrets.tap_token }}
+          ref: main
+          persist-credentials: false
+
+      - name: Set up tap Ruby
+        run: |
+          brew list ruby >/dev/null 2>&1 || brew install ruby
+          echo "$(brew --prefix ruby)/bin" >> "$GITHUB_PATH"
+
+      - name: Prepare latest formula update
+        id: prepare
+        run: ruby scripts/publish-formula prepare "$PACKAGE" "$RELEASE_TAG"
+
+      - name: Open formula pull request
+        if: steps.prepare.outputs.update == 'true'
+        id: tap
+        uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1
+        with:
+          token: ${{ secrets.tap_token }}
+          add-paths: |
+            Formula/${{ inputs.package }}.rb
+            brews/${{ inputs.package }}.json
+          base: main
+          branch: ${{ inputs.package }}
+          commit-message: "${{ inputs.package }} ${{ steps.prepare.outputs.tag }}"
+          title: "${{ inputs.package }} ${{ steps.prepare.outputs.tag }}"
+          body: |
+            Update ${{ inputs.package }} using scripts/update-formula.
+
+            Release: https://github.com/${{ steps.prepare.outputs.upstream }}/releases/tag/${{ steps.prepare.outputs.tag }}
+
+      - name: Complete and verify publication
+        env:
+          TARGET_TAG: ${{ steps.prepare.outputs.tag }}
+          TAP_PR: ${{ steps.tap.outputs.pull-request-number }}
+        run: ruby scripts/publish-formula finish "$PACKAGE" "$TARGET_TAG" "$TAP_PR"
