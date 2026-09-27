@@ -211,8 +211,13 @@ tag. `--archive` adds `.tar.gz`; archives must contain the command, `LICENSE`, a
 Verify that all four assets are published and the command's `--version` output
 matches the package version before setting `managed: true`. The setup command
 prints the existing generation, validation, and Homebrew test commands to run.
+These commands link this checkout into Homebrew's tap directory before generating
+the formula. They stop if `yowainwright/tap` already points at another checkout;
+use that checkout or resolve the existing tap location first. The link lets
+Homebrew see newly generated files before they are committed.
 It does not download assets or generate a formula. Add the README package section
-and set `readme: true` when ready to list it.
+and set `readme: true` when ready to list it. With `--command`, use the package
+name in `brew install` and the command name for the heading and usage examples.
 
 Run the setup tests with `bash scripts/test-configure-package`.
 

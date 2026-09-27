@@ -1,0 +1,53 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require "fileutils"
+require "json"
+require "open3"
+require "rbconfig"
+require "tmpdir"
+
+ROOT = File.expand_path("..", __dir__)
+
+def prepare_fixture(root)
+  FileUtils.mkdir_p(["#{root}/scripts/lib", "#{root}/brews", "#{root}/Formula"])
+  FileUtils.cp("#{ROOT}/scripts/validate-tap", "#{root}/scripts/validate-tap")
+  FileUtils.cp("#{ROOT}/scripts/lib/tap_release.rb", "#{root}/scripts/lib/tap_release.rb")
+  data = JSON.parse(File.read("#{ROOT}/brews/pre.json"))
+  data.merge!("name" => "custom-tool", "class_name" => "CustomTool", "command" => "custom")
+  File.write("#{root}/brews/custom-tool.json", JSON.generate(data))
+  data
+end
+
+def write_readme(root, data, install_name)
+  File.write("#{root}/README.md", <<~README)
+    <!-- formulas:start -->
+    ### [custom](#{data.fetch("homepage")})
+    Install [custom](Formula/custom-tool.rb) | `Formula/custom-tool.rb`
+    ```bash
+    brew install yowainwright/tap/#{install_name}
+    ```
+    Usage
+    ```bash
+    custom --help
+    ```
+    ---
+    <!-- formulas:end -->
+  README
+end
+
+def check_install_name(root, data, install_name, expected_success)
+  write_readme(root, data, install_name)
+  output, status = Open3.capture2e(RbConfig.ruby, "#{root}/scripts/validate-tap", "--strict")
+  raise "unexpected validation result for #{install_name}: #{output}" unless status.success? == expected_success
+  return if expected_success || output.include?("missing install command")
+
+  raise "expected install command failure: #{output}"
+end
+
+Dir.mktmpdir(".validate-tap-test.", __dir__) do |root|
+  data = prepare_fixture(root)
+  check_install_name(root, data, "custom-tool", true)
+  check_install_name(root, data, "custom", false)
+end
+puts "README package-name validation tests passed"

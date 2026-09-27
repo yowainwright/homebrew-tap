@@ -93,16 +93,33 @@ end
 RUBY
 }
 
+print_tap_link() {
+  cat <<'COMMANDS'
+  tap_path="$(brew --repository)/Library/Taps/yowainwright/homebrew-tap"
+  mkdir -p "$(dirname "$tap_path")"
+  if [ ! -e "$tap_path" ] && [ ! -L "$tap_path" ]; then
+    ln -s "$PWD" "$tap_path"
+  fi
+  if [ ! "$PWD" -ef "$tap_path" ]; then
+    printf 'Tap already exists elsewhere: %s\n' "$tap_path" >&2
+    exit 1
+  fi
+COMMANDS
+}
+
 print_commands() {
   printf 'Created brews/%s.json (managed: false).\n\n' "$package"
   printf 'After verifying all four release assets and matching --version output,\n'
   printf 'set managed to true in brews/%s.json. Then run from the tap root:\n\n' "$package"
+  printf '(\n  set -e\n'
+  print_tap_link
   printf '  scripts/new-formula %s\n' "$package"
   printf '  scripts/validate-tap --strict\n'
   printf '  brew style Formula/%s.rb\n' "$package"
   printf '  brew audit --strict yowainwright/tap/%s\n' "$package"
   printf '  brew install yowainwright/tap/%s\n' "$package"
   printf '  brew test yowainwright/tap/%s\n' "$package"
+  printf ')\n'
   printf '\nFuture releases: scripts/update-formula %s <version>\n' "$package"
 }
 

@@ -66,6 +66,7 @@ def validate_readme_block
   return fail_with("README.md missing formulas markers") unless block
 
   TapRelease.readme_brews.each do |data|
+    package = data.fetch("name")
     command = data.fetch("command")
     section = TapRelease.readme_section(block, command)
     formula = "Formula/#{data.fetch("name")}.rb"
@@ -77,7 +78,7 @@ def validate_readme_block
     fail_with "README.md missing ### #{command} section" unless section
     next unless section
 
-    fail_with "README.md #{command} section missing install command" unless section.include?("brew install yowainwright/tap/#{command}")
+    fail_with "README.md #{command} section missing install command" unless section.include?("brew install yowainwright/tap/#{package}")
     fail_with "README.md #{command} section missing linked heading" unless heading.start_with?("### [#{command}](")
     fail_with "README.md #{command} section heading must link to project" unless links_to_project
     fail_with "README.md #{command} section missing #{formula_link}" unless section.include?(formula_link)

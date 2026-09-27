@@ -23,6 +23,8 @@ reject() {
   grep -Fq -- "$expected" "$fixture/output" || fail "missing error: $expected"
 }
 
+# Printed commands intentionally contain literal shell variables.
+# shellcheck disable=SC2016
 test_defaults() {
   (cd "$fixture" && "$BASH" "$script" example-tool "${defaults[@]}") >"$fixture/output"
   ruby -rjson - "$fixture/brews/example-tool.json" <<'RUBY'
@@ -36,6 +38,8 @@ expected = {
 abort "unexpected default configuration: #{data}" unless data == expected
 RUBY
   grep -Fq 'scripts/new-formula example-tool' "$fixture/output" || fail 'missing generation command'
+  grep -Fq 'ln -s "$PWD" "$tap_path"' "$fixture/output" || fail 'missing local tap link'
+  grep -Fq 'if [ ! "$PWD" -ef "$tap_path" ]; then' "$fixture/output" || fail 'missing existing tap guard'
   grep -Fq 'scripts/validate-tap --strict' "$fixture/output" || fail 'missing validation command'
   grep -Fq 'brew test yowainwright/tap/example-tool' "$fixture/output" || fail 'missing test command'
   [[ ! -e "$fixture/Formula/example-tool.rb" ]] || fail 'generated a formula during setup'
