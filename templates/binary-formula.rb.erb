@@ -51,9 +51,15 @@ class <%= class_name %> < Formula
 <% else -%>
     bin.install Dir["<%= asset_prefix %>-*"].first => "<%= command %>"
 <% end -%>
+<% TapRelease.aliases(data).each do |alias_name| -%>
+    bin.install_symlink bin/<%= command.dump %> => <%= alias_name.dump %>
+<% end -%>
   end
 
   test do
     assert_match version.to_s, shell_output("#{bin}/<%= command %> --version")
+<% TapRelease.aliases(data).each do |alias_name| -%>
+    assert_match version.to_s, shell_output("#{bin}/<%= alias_name %> --version")
+<% end -%>
   end
 end

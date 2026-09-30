@@ -65,6 +65,24 @@ def test_existing_formula_defaults
   end
 end
 
+def test_pastoralist_formula
+  data = read_package("pastoralist")
+  version = data.fetch("version")
+  generated = render_formula(data, version, fixture_assets(data, version))
+  installed = File.read(File.join(repo_root, "Formula", "pastoralist.rb"))
+  [generated, installed].each do |formula|
+    RubyVM::InstructionSequence.compile(formula)
+    assert_equal(false, formula.include?("depends_on"))
+    assert_equal(false, formula.include?("registry.npmjs.org"))
+    assert_equal(false, formula.include?('system "npm"'))
+    assert_equal(4, formula.scan(/sha256 /).length)
+    assert_includes(formula, 'bin.install Dir["pastoralist-*"].first => "pastoralist"')
+    TapRelease::TARGETS.each do |target|
+      assert_includes(formula, asset_url(data, version, target))
+    end
+  end
+end
+
 def test_revision_and_platform_validation
   data = { "version" => "0.2.3", "revision" => 1 }
   assert_equal(1, TapRelease.release_data(data, "0.2.3").fetch("revision"))
@@ -76,8 +94,33 @@ def test_revision_and_platform_validation
   assert_rejects { TapRelease.asset_name({ "asset_prefix" => "../bad" }, "1.2.3", "darwin-arm64") }
 end
 
+def test_codependence_alias
+  data = read_package("codependence")
+  version = data.fetch("version")
+  formula = render_formula(data, version, fixture_assets(data, version))
+  RubyVM::InstructionSequence.compile(formula)
+  assert_includes(formula, 'bin.install_symlink bin/"codependence" => "cdp"')
+  assert_includes(formula, 'shell_output("#{bin}/cdp --version")')
+  assert_equal(4, formula.scan(/sha256 /).length)
+  %w[depends_on npm std_npm_args].each do |value|
+    raise "unexpected #{value}" if formula.include?(value)
+  end
+end
+
+def test_command_alias_validation
+  data = { "command" => "example" }
+  assert_equal([], TapRelease.aliases(data))
+  assert_equal(["ex"], TapRelease.aliases(data.merge("aliases" => ["ex"])))
+  ["ex", [nil], ["../ex"], ["$(id)"], ["ex", "ex"], ["example"]].each do |aliases|
+    assert_rejects { TapRelease.aliases(data.merge("aliases" => aliases)) }
+  end
+end
+
+test_codependence_alias
+test_command_alias_validation
 test_default_release_assets
 test_diu_formula
 test_existing_formula_defaults
+test_pastoralist_formula
 test_revision_and_platform_validation
 puts "formula generation tests passed"

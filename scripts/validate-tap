@@ -39,6 +39,7 @@ rescue ArgumentError, KeyError, TypeError => error
 end
 
 def validate_release_options(data)
+  TapRelease.aliases(data)
   TapRelease.targets(data).each { |target| TapRelease.asset_name(data, data.fetch("version"), target) }
   revision = data.fetch("revision", 0)
   raise ArgumentError, "revision must be a nonnegative integer" unless revision.is_a?(Integer) && revision >= 0
