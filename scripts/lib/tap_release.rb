@@ -53,6 +53,19 @@ module TapRelease
     names
   end
 
+  def self.command_conflicts(packages)
+    owners = {}
+    packages.flat_map do |path, data|
+      [data.fetch("command"), *aliases(data)].filter_map do |name|
+        owner = owners[name]
+        owners[name] ||= path
+        next unless owner
+
+        "#{path} command or alias #{name.inspect} conflicts with #{owner}"
+      end
+    end
+  end
+
   def self.release_data(data, version)
     updated = data.merge("version" => version)
     updated.delete("revision") if data.fetch("version") != version
