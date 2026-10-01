@@ -9,6 +9,7 @@ ROOT = TapRelease::ROOT
 STRICT = ARGV.include?("--strict")
 
 @errors = []
+@validated_packages = []
 
 def fail_with(message)
   @errors << message
@@ -29,16 +30,20 @@ def validate_package(path)
   return unless missing.empty?
 
   expected_name = File.basename(path, ".json")
-  fail_with "#{relative(path)} name must be #{expected_name}" unless data.fetch("name") == expected_name
-  fail_with "#{relative(path)} managed must be true or false" unless [true, false].include?(data.fetch("managed"))
+  valid_name = data.fetch("name") == expected_name
+  fail_with "#{relative(path)} name must be #{expected_name}" unless valid_name
+  valid_managed = [true, false].include?(data.fetch("managed"))
+  fail_with "#{relative(path)} managed must be true or false" unless valid_managed
   valid_archive = [true, false].include?(data.fetch("archive", false))
   fail_with "#{relative(path)} archive must be true or false" unless valid_archive
   validate_release_options(data)
+  @validated_packages << [relative(path), data] if valid_name && valid_managed && valid_archive
 rescue ArgumentError, KeyError, TypeError => error
   fail_with "#{relative(path)}: #{error.message}"
 end
 
 def validate_release_options(data)
+  TapRelease.aliases(data)
   TapRelease.targets(data).each { |target| TapRelease.asset_name(data, data.fetch("version"), target) }
   revision = data.fetch("revision", 0)
   raise ArgumentError, "revision must be a nonnegative integer" unless revision.is_a?(Integer) && revision >= 0
@@ -135,6 +140,7 @@ end
 fail_with "missing brews/*.json" if package_files.empty?
 
 package_files.each { |path| validate_package(path) }
+TapRelease.command_conflicts(@validated_packages).each { |conflict| fail_with conflict }
 Dir[File.join(ROOT, "Formula", "*.rb")].sort.each { |path| validate_ruby_syntax(path) }
 Dir[File.join(ROOT, "scripts", "*")].sort.each do |path|
   next unless File.file?(path)

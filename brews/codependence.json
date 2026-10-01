@@ -9,5 +9,8 @@
   "version": "1.0.12",
   "asset_prefix": "codependence",
   "managed": false,
-  "readme": true
+  "readme": true,
+  "aliases": [
+    "cdp"
+  ]
 }

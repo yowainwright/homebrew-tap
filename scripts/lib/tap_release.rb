@@ -44,6 +44,28 @@ module TapRelease
     name
   end
 
+  def self.aliases(data)
+    names = data.fetch("aliases", [])
+    valid = names.is_a?(Array) && names.all? { |name| name.is_a?(String) && name.match?(/\A[0-9A-Za-z][0-9A-Za-z._+-]*\z/) }
+    raise ArgumentError, "aliases must contain command names" unless valid
+    raise ArgumentError, "aliases must be unique and distinct from command" unless names.uniq == names && !names.include?(data.fetch("command"))
+
+    names
+  end
+
+  def self.command_conflicts(packages)
+    owners = {}
+    packages.flat_map do |path, data|
+      [data.fetch("command"), *aliases(data)].filter_map do |name|
+        owner = owners[name]
+        owners[name] ||= path
+        next unless owner
+
+        "#{path} command or alias #{name.inspect} conflicts with #{owner}"
+      end
+    end
+  end
+
   def self.release_data(data, version)
     updated = data.merge("version" => version)
     updated.delete("revision") if data.fetch("version") != version
