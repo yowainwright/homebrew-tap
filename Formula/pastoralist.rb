@@ -5,29 +5,28 @@ class Pastoralist < Formula
   desc "Audit, secure, and clean up package manager overrides"
   homepage "https://jeffry.in/pastoralist/"
   license "MIT"
-  revision 1
 
   on_macos do
     on_arm do
-      url "https://github.com/yowainwright/pastoralist/releases/download/v1.13.5/pastoralist-darwin-arm64"
-      sha256 "f8bb02aaa5b46c16da9dced3579d7c297f83ececc2b8c6a3a7e7eb323a64e684"
+      url "https://github.com/yowainwright/pastoralist/releases/download/v1.13.6/pastoralist-darwin-arm64"
+      sha256 "e5c75262a2e3341e9ad06ff3fdce7624a8324bdc054ba3db5a456c6ea04eeeb2"
     end
 
     on_intel do
-      url "https://github.com/yowainwright/pastoralist/releases/download/v1.13.5/pastoralist-darwin-amd64"
-      sha256 "e5d5724ccc1132a3daa8f981ea570a9858e86f60d6717b45193994f593b21a02"
+      url "https://github.com/yowainwright/pastoralist/releases/download/v1.13.6/pastoralist-darwin-amd64"
+      sha256 "2c92831b65c60dfada37f9e17e2ea9edd666591fb1841e7f7b88f83555bd81ba"
     end
   end
 
   on_linux do
     on_arm do
-      url "https://github.com/yowainwright/pastoralist/releases/download/v1.13.5/pastoralist-linux-arm64"
-      sha256 "dc4459a4b5492167246880e304c9cb422647878d0eff19c28a363f576147bbde"
+      url "https://github.com/yowainwright/pastoralist/releases/download/v1.13.6/pastoralist-linux-arm64"
+      sha256 "c3a628a2a9e91f22e470594aa1b4a43542cc474d7e524ba88b1c63704311fabe"
     end
 
     on_intel do
-      url "https://github.com/yowainwright/pastoralist/releases/download/v1.13.5/pastoralist-linux-amd64"
-      sha256 "b8ebf7be16ebe4090538b64c3c7ed67c7614bad155198cd9e94c841f0b50bc8e"
+      url "https://github.com/yowainwright/pastoralist/releases/download/v1.13.6/pastoralist-linux-amd64"
+      sha256 "2d325800c6feef38b745eb64c538f685d5cd28792b03d89e0b9e6f3d811bed70"
     end
   end
 
