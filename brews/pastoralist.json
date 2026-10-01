@@ -6,9 +6,8 @@
   "desc": "Audit, secure, and clean up package manager overrides",
   "homepage": "https://jeffry.in/pastoralist/",
   "license": "MIT",
-  "version": "1.13.5",
+  "version": "1.13.6",
   "asset_prefix": "pastoralist",
   "managed": true,
-  "readme": true,
-  "revision": 1
+  "readme": true
 }
