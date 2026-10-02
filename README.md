@@ -177,6 +177,24 @@ shellcheck-legibility check .
 
 ---
 
+### [legibility-golangci-lint](https://github.com/yowainwright/go-lint-legibility)
+
+Syntax-only Go readability rules for golangci-lint.
+
+Install [legibility-golangci-lint](Formula/golangci-lint-legibility.rb) | `Formula/golangci-lint-legibility.rb`
+
+```bash
+brew install yowainwright/tap/golangci-lint-legibility
+```
+
+Usage
+
+```bash
+legibility-golangci-lint run ./...
+```
+
+---
+
 <!-- formulas:end -->
 
 ## Updating
