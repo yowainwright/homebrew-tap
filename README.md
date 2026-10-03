@@ -11,7 +11,6 @@ brew tap yowainwright/tap
 ## Available Formulas
 
 <!-- formulas:start -->
-<!-- manual sections; scripts/validate-tap checks required install, usage, and links -->
 
 ### [codependence](https://jeffry.in/codependence/)
 
@@ -34,9 +33,6 @@ codependence --help
 ### [diu](https://github.com/yowainwright/diu)
 
 Track package-manager and global CLI usage
-
-<!-- DIU installation derived from brews/diu.json and Formula/diu.rb -->
-Installs the prebuilt Apple Silicon or Intel Mac binary. Go is not required.
 
 Install [diu](Formula/diu.rb) | `Formula/diu.rb`
 
@@ -194,7 +190,6 @@ legibility-golangci-lint run ./...
 ```
 
 ---
-
 <!-- formulas:end -->
 
 ## Updating
@@ -206,51 +201,207 @@ brew upgrade
 
 ## Configure a new package
 
-Run guided setup from this checkout (requires Bash and Ruby):
+To create a new package simply run
 
 ```bash
 scripts/configure-package
 ```
 
-Each question has a matching flag. Supply any flags to skip those questions;
-press Enter to accept an offered default. For example:
+This will walk you through the steps.
 
-```bash
-scripts/configure-package example-tool \
-  --repo yowainwright/example-tool \
-  --desc "Example command-line tool" \
-  --license MIT \
-  --version 1.2.3
+### Options
+
+You can also use options to make setting up a new package faster/easer.
+
+#### `--name`
+
+Sets the package name. You can also provide it as the first positional argument.
+Names use lowercase letters, digits, and single hyphens, starting with a letter.
+
+Run:
+
+```sh
+scripts/configure-package --name example-tool
 ```
 
-Use `--name` instead of the positional package name if preferred. `--archive`
-selects `.tar.gz` assets; `--no-archive` selects raw binaries. `--help` lists all
-flags. Without a terminal, required values must be supplied as flags and optional
-values use their defaults.
+Output:
 
-Package names use lowercase letters, digits, and single hyphens, starting with a letter.
-Versions omit the `v` tag prefix. The command refuses existing inventory or formula
-files and creates `brews/<package>.json` with `managed: false` and `readme: false`.
+```diff
++ "name": "example-tool",
++ "class_name": "ExampleTool",
+```
 
-The default release assets are `<package>-darwin-arm64`, `<package>-darwin-amd64`,
-`<package>-linux-arm64`, and `<package>-linux-amd64` under the upstream `v<version>`
-tag. `--archive` adds `.tar.gz`; archives must contain the command, `LICENSE`, and
-`LICENSES`, as expected by the shared formula template.
+#### `--repo`
 
-Verify that all four assets are published and the command's `--version` output
-matches the package version before setting `managed: true`. The setup command
-prints the existing generation, validation, and Homebrew test commands to run.
-These commands link this checkout into Homebrew's tap directory before generating
-the formula. They stop if `yowainwright/tap` already points at another checkout;
-use that checkout or resolve the existing tap location first. The link lets
-Homebrew see newly generated files before they are committed.
-It does not download assets or generate a formula. Add the README package section
-and set `readme: true` when ready to list it. With `--command`, use the package
-name in `brew install` and the command name for the heading and usage examples.
+Sets the upstream GitHub repository in `owner/repo` form.
 
-Run the setup tests with `bash scripts/test-configure-package`.
+Run:
+
+```sh
+scripts/configure-package example-tool --repo yowainwright/example-tool
+```
+
+Output:
+
+```diff
++ "repo": "yowainwright/example-tool",
+```
+
+#### `--desc`
+
+Sets the short package description.
+
+Run:
+
+```sh
+scripts/configure-package example-tool --desc "Example command-line tool"
+```
+
+Output:
+
+```diff
++ "desc": "Example command-line tool",
+```
+
+#### `--license`
+
+Sets the SPDX license identifier. For MIT, use `MIT` for the
+[MIT License](https://opensource.org/license/mit).
+
+Run:
+
+```sh
+scripts/configure-package example-tool --license MIT
+```
+
+Output:
+
+```diff
++ "license": "MIT",
+```
+
+#### `--version`
+
+Sets the release version without the leading `v` used in the Git tag.
+
+Run:
+
+```sh
+scripts/configure-package example-tool --version 1.2.3
+```
+
+Output:
+
+```diff
++ "version": "1.2.3",
+```
+
+#### `--command`
+
+Sets the installed command name. It defaults to the package name.
+
+Run:
+
+```sh
+scripts/configure-package example-tool --command example
+```
+
+Output:
+
+```diff
++ "command": "example",
+```
+
+#### `--homepage`
+
+Sets the project homepage. It defaults to the GitHub repository URL.
+
+Run:
+
+```sh
+scripts/configure-package example-tool --homepage https://example.com
+```
+
+Output:
+
+```diff
++ "homepage": "https://example.com",
+```
+
+#### `--asset-prefix`
+
+Sets the prefix used in release asset names. It defaults to the package name.
+
+Run:
+
+```sh
+scripts/configure-package example-tool --asset-prefix example
+```
+
+Output:
+
+```diff
++ "asset_prefix": "example",
+```
+
+#### `--archive`
+
+Uses `.tar.gz` release assets instead of raw binaries. Each archive must contain
+the command, `LICENSE`, and `LICENSES` for the shared formula template.
+
+Run:
+
+```sh
+scripts/configure-package example-tool --archive
+```
+
+Output:
+
+```diff
++ "archive": true
+```
+
+#### `--no-archive`
+
+Uses raw binary release assets. This is the default; the inventory has no
+`archive` field.
+
+Run:
+
+```sh
+scripts/configure-package example-tool --no-archive
+```
+
+Output:
+
+```diff
+  "asset_prefix": "example-tool",
+  "managed": false,
+```
+
+#### `--help`
+
+Lists the command's options. `-h` is an alias.
+
+Run:
+
+```sh
+scripts/configure-package --help
+```
+
+Output:
+
+```diff
++ Usage: scripts/configure-package [package] [options]
++ Options:
++   --name <package>       Package name (or use the positional argument)
++   ...
+```
 
 ## Issues
 
 - **Formula issues**: [Open an issue here](https://github.com/yowainwright/homebrew-tap/issues)
-- **Tool-specific bugs**: Report on the respective project repository
+
+## LICENSE
+
+Licensed under the [MIT License](LICENSE).
