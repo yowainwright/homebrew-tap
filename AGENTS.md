@@ -56,7 +56,8 @@ Use repo scripts:
 
 `brews/*.json` is inventory. The scripts may generate only entries with `managed: true`.
 
-Set `managed: true` only after upstream publishes the standard asset matrix and `command --version` prints the formula version.
+Set `managed: true` only after upstream publishes the standard asset matrix
+and `command --version` prints the formula version.
 
 If a script fails, report the failed invariant and stop.
 
