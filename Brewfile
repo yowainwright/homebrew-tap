@@ -1,0 +1,10 @@
+brew "ruby"
+brew "shellcheck"
+brew "shfmt"
+brew "codespell"
+brew "markdownlint-cli2"
+brew "rubocop"
+brew "actionlint"
+
+tap "yowainwright/tap"
+brew "yowainwright/tap/shellcheck-legibility"

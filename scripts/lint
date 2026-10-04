@@ -1,0 +1,28 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+ROOT = File.expand_path("..", __dir__)
+
+def scripts_for(runtime)
+  Dir["scripts/**/*"].sort.select do |path|
+    File.file?(path) && File.read(path, 64).start_with?("#!/usr/bin/env #{runtime}")
+  end
+end
+
+def check(*command)
+  puts "+ #{command.join(' ')}"
+  abort "lint failed: #{command.first}" unless system(*command)
+end
+
+Dir.chdir(ROOT) do
+  shell = scripts_for("bash")
+  check("shellcheck", *shell)
+  check("shfmt", "-d", *shell)
+  check("shellcheck-legibility", "check", *shell, "--no-cache")
+  check("codespell", ".")
+  check("markdownlint-cli2")
+  check("rubocop", "--cache", "false", *scripts_for("ruby"), "scripts/lib/tap_release.rb")
+  # actionlint 1.7.12 predates GitHub's concurrency queue property.
+  check("actionlint", "-ignore", 'unexpected key "queue" for "concurrency" section')
+  check("brew", "style", "Formula")
+end
