@@ -45,9 +45,63 @@ def check_install_name(root, data, install_name, expected_success)
   raise "expected install command failure: #{output}"
 end
 
+def assert_invalid(root, message)
+  output, status = Open3.capture2e(RbConfig.ruby, "#{root}/scripts/validate-tap", "--strict")
+  raise "expected #{message.inspect}, got: #{output}" if status.success? || !output.include?(message)
+end
+
+def test_invalid_metadata(root, data)
+  cases = [
+    [{ "managed" => "yes" }, "managed must be true or false"],
+    [{ "archive" => "yes" }, "archive must be true or false"],
+    [{ "name" => "wrong-name" }, "name must be custom-tool"],
+    [{ "revision" => -1 }, "revision must be a nonnegative integer"],
+    [{ "archive_files" => ["../LICENSE"] }, "archive_files must contain filenames"]
+  ]
+  path = "#{root}/brews/custom-tool.json"
+  cases.each do |changes, message|
+    File.write(path, JSON.generate(data.merge(changes)))
+    assert_invalid(root, message)
+  end
+ensure
+  File.write(path, JSON.generate(data))
+end
+
+def test_invalid_readme(root, data)
+  path = "#{root}/README.md"
+  write_readme(root, data, "custom-tool")
+  original = File.read(path)
+  cases = [
+    ["### [custom]", "### [missing]", "missing ### custom section"],
+    [data.fetch("homepage"), "https://example.invalid", "heading must link to project"],
+    ["\nUsage\n", "\nExamples\n", "missing Usage label"],
+    ["\n---\n", "\n", "missing horizontal rule"]
+  ]
+  cases.each do |before, after, message|
+    File.write(path, original.sub(before, after))
+    assert_invalid(root, message)
+  end
+ensure
+  File.write(path, original)
+end
+
+def test_invalid_release_shape(root)
+  File.write("#{root}/forbidden.rb", "# root formula\n")
+  FileUtils.mkdir_p("#{root}/Casks")
+  File.write("#{root}/Casks/forbidden.rb", "# CLI cask\n")
+  File.write("#{root}/Formula/custom-tool.rb", "sha256 \"\"\n")
+  assert_invalid(root, "root formula files are not allowed")
+  assert_invalid(root, "CLI casks are not allowed")
+  assert_invalid(root, "empty sha256 values")
+end
+
 Dir.mktmpdir(".validate-tap-test.", __dir__) do |root|
   data = prepare_fixture(root)
   check_install_name(root, data, "custom-tool", true)
   check_install_name(root, data, "custom", false)
+  write_readme(root, data, "custom-tool")
+  test_invalid_metadata(root, data)
+  test_invalid_readme(root, data)
+  test_invalid_release_shape(root)
 end
-puts "README package-name validation tests passed"
+puts "tap validation tests passed"

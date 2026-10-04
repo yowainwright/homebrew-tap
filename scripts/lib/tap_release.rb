@@ -46,9 +46,13 @@ module TapRelease
 
   def self.aliases(data)
     names = data.fetch("aliases", [])
-    valid = names.is_a?(Array) && names.all? { |name| name.is_a?(String) && name.match?(/\A[0-9A-Za-z][0-9A-Za-z._+-]*\z/) }
+    valid = names.is_a?(Array) && names.all? do |name|
+      name.is_a?(String) && name.match?(/\A[0-9A-Za-z][0-9A-Za-z._+-]*\z/)
+    end
     raise ArgumentError, "aliases must contain command names" unless valid
-    raise ArgumentError, "aliases must be unique and distinct from command" unless names.uniq == names && !names.include?(data.fetch("command"))
+
+    unique = names.uniq == names && !names.include?(data.fetch("command"))
+    raise ArgumentError, "aliases must be unique and distinct from command" unless unique
 
     names
   end

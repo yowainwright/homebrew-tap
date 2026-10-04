@@ -100,7 +100,8 @@ def test_generated_command_alias
   formula = render_formula(data, version, fixture_assets(data, version))
   RubyVM::InstructionSequence.compile(formula)
   assert_includes(formula, 'bin.install_symlink bin/"pre" => "pre-alt"')
-  assert_includes(formula, 'shell_output("#{bin}/pre-alt --version")')
+  # The generated formula, rather than this test, interpolates bin.
+  assert_includes(formula, 'shell_output("#{bin}/pre-alt --version")') # rubocop:disable Lint/InterpolationCheck
   assert_equal(4, formula.scan(/sha256 /).length)
 end
 

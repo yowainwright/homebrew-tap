@@ -42,7 +42,8 @@ class HomebrewRelease
   end
 
   def version(value)
-    raise "Expected a stable MAJOR.MINOR.PATCH version: #{value}" unless value.match?(/\A(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)\z/)
+    stable = value.match?(/\A(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)\z/)
+    raise "Expected a stable MAJOR.MINOR.PATCH version: #{value}" unless stable
 
     Gem::Version.new(value)
   end
@@ -77,7 +78,8 @@ class HomebrewRelease
 
   def verify_release(target)
     release = api("repos/#{@upstream}/releases/tags/#{release_tag(target)}")
-    raise "Release v#{target} is not a published stable release" if release.fetch("draft") || release.fetch("prerelease")
+    unpublished = release.fetch("draft") || release.fetch("prerelease")
+    raise "Release v#{target} is not a published stable release" if unpublished
 
     assets = release.fetch("assets").select { |asset| asset.fetch("size").positive? }
     names = assets.map { |asset| asset.fetch("name") }

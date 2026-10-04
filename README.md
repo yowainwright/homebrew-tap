@@ -120,6 +120,7 @@ fs-lint check --staged
 ```
 
 ---
+
 ### [legibility](https://github.com/yowainwright/legibility)
 
 Configure existing Legibility tools for readable code.
@@ -137,6 +138,7 @@ legibility --help
 ```
 
 ---
+
 ### [src-lint](https://github.com/yowainwright/src-lint)
 
 Enforce import boundaries across services and packages.
@@ -211,7 +213,7 @@ This will walk you through the steps.
 
 ### Options
 
-You can also use options to make setting up a new package faster/easer.
+You can also use options to make setting up a new package faster/easier.
 
 #### `--name`
 
@@ -397,6 +399,19 @@ Output:
 +   --name <package>       Package name (or use the positional argument)
 +   ...
 ```
+
+## Development checks
+
+Install the lint tools with `brew bundle install --no-upgrade`, then run `ruby scripts/lint`.
+CI runs the same command in the required `validate` job.
+
+The checks cover ShellCheck, shfmt, shellcheck-legibility, Codespell,
+markdownlint-cli2, RuboCop, actionlint, and Homebrew formula style.
+Extensionless shell and Ruby scripts are included. Shell formatting uses
+the two-space indentation in `.editorconfig`.
+
+Run `scripts/validate-tap --strict` for inventory and release-shape validation.
+Release changes also require Homebrew audit, installation, and formula tests.
 
 ## Issues
 

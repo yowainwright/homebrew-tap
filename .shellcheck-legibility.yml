@@ -1,0 +1,2 @@
+select: [LEG]
+max-function-lines: 20

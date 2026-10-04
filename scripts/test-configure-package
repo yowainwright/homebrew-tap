@@ -1,15 +1,14 @@
 #!/usr/bin/env bash
 set -euo pipefail
-# Flag-only tests must behave consistently when launched from a terminal.
-exec </dev/null
-
-repo_root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
-fixture="$(mktemp -d "$repo_root/scripts/.configure-package-test.XXXXXX")"
-trap 'rm -rf -- "$fixture"' EXIT
-mkdir "$fixture/scripts" "$fixture/brews" "$fixture/Formula"
-cp "$repo_root/scripts/configure-package" "$fixture/scripts/"
-script="$fixture/scripts/configure-package"
-defaults=(--repo example/example --desc "Example developer's tool" --license MIT --version 1.2.3)
+setup_fixture() {
+  repo_root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
+  fixture="$(mktemp -d "$repo_root/scripts/.configure-package-test.XXXXXX")"
+  trap 'rm -rf -- "$fixture"' EXIT
+  mkdir "$fixture/scripts" "$fixture/brews" "$fixture/Formula"
+  cp "$repo_root/scripts/configure-package" "$fixture/scripts/"
+  script="$fixture/scripts/configure-package"
+  defaults=(--repo example/example --desc "Example developer's tool" --license MIT --version 1.2.3)
+}
 
 fail() {
   printf 'FAIL: %s\n' "$*" >&2
@@ -17,7 +16,7 @@ fail() {
 }
 
 reject() {
-  local expected="$1"
+  local expected="${1:?}"
   shift
   if "$BASH" "$script" "$@" >"$fixture/output" 2>&1; then
     fail "unexpected success: $*"
@@ -90,26 +89,38 @@ test_invalid_arguments() {
   [[ ! -e "$fixture/brews/invalid.json" && ! -e "$fixture/escape.json" ]] || fail 'invalid input wrote configuration'
 }
 
+check_control_characters() {
+  local option="${1:?}" control expected
+  for control in $'\001' $'\t' $'\n' $'\r' $'\037' $'\177'; do
+    expected='single-line text'
+    case "$option:$control" in
+    --homepage:[$'\t\n\r']) expected='HTTP(S)' ;;
+    esac
+    reject "$expected" invalid "${defaults[@]}" "$option" "https://example.com/a${control}b"
+  done
+}
+
 test_control_characters() {
-  local option control expected
+  local option
   for option in --desc --license --homepage; do
-    for control in $'\001' $'\t' $'\n' $'\r' $'\037' $'\177'; do
-      expected='single-line text'
-      case "$option:$control" in
-      --homepage:[$'\t\n\r']) expected='HTTP(S)' ;;
-      esac
-      reject "$expected" invalid "${defaults[@]}" "$option" "https://example.com/a${control}b"
-    done
+    check_control_characters "$option"
   done
   [[ ! -e "$fixture/brews/invalid.json" ]] || fail 'control character input wrote configuration'
 }
 
-"$BASH" "$script" --help >"$fixture/output"
-grep -Fq 'Usage:' "$fixture/output" || fail 'missing help'
-test_defaults
-test_options
-test_existing_files
-test_invalid_arguments
-test_control_characters
-ruby "$repo_root/scripts/test-configure-package-prompts" "$BASH" "$script"
-printf 'package configuration tests passed\n'
+main() {
+  # Flag-only tests must behave consistently when launched from a terminal.
+  exec </dev/null
+  setup_fixture
+  "$BASH" "$script" --help >"$fixture/output"
+  grep -Fq 'Usage:' "$fixture/output" || fail 'missing help'
+  test_defaults
+  test_options
+  test_existing_files
+  test_invalid_arguments
+  test_control_characters
+  ruby "$repo_root/scripts/test-configure-package-prompts" "$BASH" "$script"
+  printf 'package configuration tests passed\n'
+}
+
+main "$@"

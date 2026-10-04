@@ -65,8 +65,8 @@ def test_guided_setup
   ]
   run_setup([], answers)
   assert_fields("guided-tool", "command" => "guided-tool", "asset_prefix" => "guided-tool",
-                              "homepage" => "https://github.com/example/guided-tool", "archive" => true,
-                              "managed" => false, "readme" => false)
+                               "homepage" => "https://github.com/example/guided-tool", "archive" => true,
+                               "managed" => false, "readme" => false)
 end
 
 def test_flags_skip_questions
@@ -74,8 +74,9 @@ def test_flags_skip_questions
                  --command flag --homepage https://example.com --asset-prefix flag --no-archive]
   output = run_setup(arguments, [["Description (--desc): ", "Flag tool"]])
   raise "flags did not skip their prompts" if output.include?("Package name (--name):")
+
   assert_fields("flag-tool", "desc" => "Flag tool", "command" => "flag",
-                            "homepage" => "https://example.com", "asset_prefix" => "flag")
+                             "homepage" => "https://example.com", "asset_prefix" => "flag")
   raise "--no-archive was ignored" if read_config("flag-tool").fetch("archive", false)
 end
 
@@ -85,6 +86,7 @@ def test_all_flags
                  --asset-prefix complete --archive]
   output = run_setup(arguments, [])
   raise "unexpected prompt" if output.include?("(--")
+
   assert_fields("complete-tool", "archive" => true, "command" => "complete")
 end
 

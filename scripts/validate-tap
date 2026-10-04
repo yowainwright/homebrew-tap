@@ -29,6 +29,14 @@ def validate_package(path)
   fail_with "#{relative(path)} missing fields: #{missing.join(", ")}" unless missing.empty?
   return unless missing.empty?
 
+  valid_identity = validate_package_identity(path, data)
+  validate_release_options(data)
+  @validated_packages << [relative(path), data] if valid_identity
+rescue ArgumentError, KeyError, TypeError => error
+  fail_with "#{relative(path)}: #{error.message}"
+end
+
+def validate_package_identity(path, data)
   expected_name = File.basename(path, ".json")
   valid_name = data.fetch("name") == expected_name
   fail_with "#{relative(path)} name must be #{expected_name}" unless valid_name
@@ -36,10 +44,7 @@ def validate_package(path)
   fail_with "#{relative(path)} managed must be true or false" unless valid_managed
   valid_archive = [true, false].include?(data.fetch("archive", false))
   fail_with "#{relative(path)} archive must be true or false" unless valid_archive
-  validate_release_options(data)
-  @validated_packages << [relative(path), data] if valid_name && valid_managed && valid_archive
-rescue ArgumentError, KeyError, TypeError => error
-  fail_with "#{relative(path)}: #{error.message}"
+  valid_name && valid_managed && valid_archive
 end
 
 def validate_release_options(data)
@@ -48,8 +53,16 @@ def validate_release_options(data)
   revision = data.fetch("revision", 0)
   raise ArgumentError, "revision must be a nonnegative integer" unless revision.is_a?(Integer) && revision >= 0
 
+  validate_archive_files(data)
+end
+
+def valid_archive_filename?(name)
+  name.is_a?(String) && name.match?(/\A[0-9A-Za-z._-]+\z/) && !%w[. ..].include?(name)
+end
+
+def validate_archive_files(data)
   files = data.fetch("archive_files", [])
-  valid_files = files.is_a?(Array) && files.all? { |name| name.is_a?(String) && name.match?(/\A[0-9A-Za-z._-]+\z/) && !%w[. ..].include?(name) }
+  valid_files = files.is_a?(Array) && files.all? { |name| valid_archive_filename?(name) }
   raise ArgumentError, "archive_files must contain filenames" unless valid_files
 end
 
@@ -70,40 +83,52 @@ def validate_readme_block
   block = TapRelease.readme_block(readme)
   return fail_with("README.md missing formulas markers") unless block
 
-  TapRelease.readme_brews.each do |data|
-    package = data.fetch("name")
-    command = data.fetch("command")
-    section = TapRelease.readme_section(block, command)
-    formula = "Formula/#{data.fetch("name")}.rb"
-    github = "https://github.com/#{data.fetch("repo")}"
-    heading = section&.lines&.first.to_s
-    formula_link = "Install [#{command}](#{formula}) | `#{formula}`"
-    links_to_project = heading.include?(data.fetch("homepage")) || heading.include?(github)
+  TapRelease.readme_brews.each { |data| validate_readme_section(block, data) }
+end
 
-    fail_with "README.md missing ### #{command} section" unless section
-    next unless section
+def validate_readme_section(block, data)
+  command = data.fetch("command")
+  section = TapRelease.readme_section(block, command)
+  return fail_with("README.md missing ### #{command} section") unless section
 
-    fail_with "README.md #{command} section missing install command" unless section.include?("brew install yowainwright/tap/#{package}")
-    fail_with "README.md #{command} section missing linked heading" unless heading.start_with?("### [#{command}](")
-    fail_with "README.md #{command} section heading must link to project" unless links_to_project
-    fail_with "README.md #{command} section missing #{formula_link}" unless section.include?(formula_link)
-    fail_with "README.md #{command} section missing Usage label" unless section.include?("\nUsage\n")
-    last_line = section.lines.reject { |line| line.strip.empty? }.last&.chomp
-    fail_with "README.md #{command} section missing horizontal rule" unless last_line == "---"
-  end
+  validate_readme_heading(section.lines.first, data)
+  validate_readme_usage(section, data)
+end
+
+def validate_readme_heading(heading, data)
+  command = data.fetch("command")
+  github = "https://github.com/#{data.fetch("repo")}"
+  links_to_project = heading.include?(data.fetch("homepage")) || heading.include?(github)
+  fail_with "README.md #{command} section missing linked heading" unless heading.start_with?("### [#{command}](")
+  fail_with "README.md #{command} section heading must link to project" unless links_to_project
+end
+
+def validate_readme_usage(section, data)
+  command = data.fetch("command")
+  package = data.fetch("name")
+  formula = "Formula/#{package}.rb"
+  formula_link = "Install [#{command}](#{formula}) | `#{formula}`"
+  install = "brew install yowainwright/tap/#{package}"
+  fail_with "README.md #{command} section missing install command" unless section.include?(install)
+  fail_with "README.md #{command} section missing #{formula_link}" unless section.include?(formula_link)
+  fail_with "README.md #{command} section missing Usage label" unless section.include?("\nUsage\n")
+  last_line = section.lines.reject { |line| line.strip.empty? }.last&.chomp
+  fail_with "README.md #{command} section missing horizontal rule" unless last_line == "---"
+end
+
+def reject_paths(paths, label)
+  fail_with "#{label}: #{paths.map { |path| relative(path) }.join(", ")}" unless paths.empty?
+end
+
+def validate_checksums(paths, label)
+  empty_sha = paths.select { |path| File.read(File.join(ROOT, relative(path))).match?(/sha256\s+""/) }
+  reject_paths(empty_sha, label)
 end
 
 def validate_strict_release_shape
-  root_formulae = Dir[File.join(ROOT, "*.rb")]
-  fail_with "root formula files are not allowed: #{root_formulae.map { |path| relative(path) }.join(", ")}" unless root_formulae.empty?
-
-  casks = Dir[File.join(ROOT, "Casks", "*.rb")]
-  fail_with "CLI casks are not allowed: #{casks.map { |path| relative(path) }.join(", ")}" unless casks.empty?
-
-  empty_sha = Dir[File.join(ROOT, "Formula", "*.rb")].select do |path|
-    File.read(path).match?(/sha256\s+""/)
-  end
-  fail_with "empty sha256 values: #{empty_sha.map { |path| relative(path) }.join(", ")}" unless empty_sha.empty?
+  reject_paths(Dir[File.join(ROOT, "*.rb")], "root formula files are not allowed")
+  reject_paths(Dir[File.join(ROOT, "Casks", "*.rb")], "CLI casks are not allowed")
+  validate_checksums(Dir[File.join(ROOT, "Formula", "*.rb")], "empty sha256 values")
 end
 
 def git_output(*args)
@@ -125,16 +150,13 @@ end
 def validate_changed_release_shape
   changed = changed_files
   root_formulae = changed.select { |path| path.match?(%r{\A[^/]+\.rb\z}) }
-  fail_with "changed root formula files are not allowed: #{root_formulae.join(", ")}" unless root_formulae.empty?
+  reject_paths(root_formulae, "changed root formula files are not allowed")
 
   casks = changed.select { |path| path.start_with?("Casks/") && path.end_with?(".rb") }
-  fail_with "changed CLI casks are not allowed: #{casks.join(", ")}" unless casks.empty?
+  reject_paths(casks, "changed CLI casks are not allowed")
 
   formulae = changed.select { |path| path.start_with?("Formula/") && path.end_with?(".rb") }
-  empty_sha = formulae.select do |path|
-    File.read(File.join(ROOT, path)).match?(/sha256\s+""/)
-  end
-  fail_with "changed formulas contain empty sha256 values: #{empty_sha.join(", ")}" unless empty_sha.empty?
+  validate_checksums(formulae, "changed formulas contain empty sha256 values")
 end
 
 fail_with "missing brews/*.json" if package_files.empty?
