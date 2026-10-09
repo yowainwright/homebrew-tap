@@ -8,7 +8,7 @@
   "license": "MIT",
   "version": "1.0.12",
   "asset_prefix": "codependence",
-  "managed": false,
+  "managed": true,
   "readme": true,
   "aliases": [
     "cdp"
