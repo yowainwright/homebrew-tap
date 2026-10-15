@@ -6,7 +6,7 @@
   "desc": "Track package-manager and global CLI usage",
   "homepage": "https://github.com/yowainwright/diu",
   "license": "MIT",
-  "version": "0.2.7",
+  "version": "0.2.8",
   "asset_prefix": "diu",
   "managed": true,
   "readme": true,
