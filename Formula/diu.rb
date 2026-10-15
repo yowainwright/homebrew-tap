@@ -10,13 +10,13 @@ class Diu < Formula
 
   on_macos do
     on_arm do
-      url "https://github.com/yowainwright/diu/releases/download/v0.2.6/diu_0.2.6_darwin_arm64.tar.gz"
-      sha256 "fb958b0afe104312d745964e3b0b1a56f6e7c1d5a4d07ec746056db195e8b5b1"
+      url "https://github.com/yowainwright/diu/releases/download/v0.2.7/diu_0.2.7_darwin_arm64.tar.gz"
+      sha256 "46af309201563b3e0ae1a88bfca64a311b7aa460987d064c377db25d119b8f41"
     end
 
     on_intel do
-      url "https://github.com/yowainwright/diu/releases/download/v0.2.6/diu_0.2.6_darwin_amd64.tar.gz"
-      sha256 "2bf5bb88f978bf20f67a53aaf08a11b5444ddf2e57e11b7c3951da3fe1fcda1d"
+      url "https://github.com/yowainwright/diu/releases/download/v0.2.7/diu_0.2.7_darwin_amd64.tar.gz"
+      sha256 "17883b3990ffd73358262bf665c05fe0232df8251aa7edef83fd3cecec9de78b"
     end
   end
 
