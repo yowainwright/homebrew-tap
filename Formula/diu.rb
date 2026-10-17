@@ -4,21 +4,17 @@
 class Diu < Formula
   desc "Track package-manager and global CLI usage"
   homepage "https://github.com/yowainwright/diu"
+  url on_arch_conditional(
+    arm:   "https://github.com/yowainwright/diu/releases/download/v0.2.8/diu_0.2.8_darwin_arm64.tar.gz",
+    intel: "https://github.com/yowainwright/diu/releases/download/v0.2.8/diu_0.2.8_darwin_amd64.tar.gz",
+  )
+  sha256 on_arch_conditional(
+    arm:   "58a15f3189e5d37b54ebf98bb3a96038c3ad661ad0736be187009399cfad54d3",
+    intel: "642800108223be442b86f048898626d724baf90864c1c7b3b339c64fe53e8ba9",
+  )
   license "MIT"
 
   depends_on :macos
-
-  on_macos do
-    on_arm do
-      url "https://github.com/yowainwright/diu/releases/download/v0.2.4/diu_0.2.4_darwin_arm64.tar.gz"
-      sha256 "ce491d33780220d3779160962dc376daf0f785b26acab975b4bf1f472692d8e8"
-    end
-
-    on_intel do
-      url "https://github.com/yowainwright/diu/releases/download/v0.2.4/diu_0.2.4_darwin_amd64.tar.gz"
-      sha256 "d44dfc0f3e66b520182f99f30fbf1ab7b81cebfabdab35800db65fe7fac79f58"
-    end
-  end
 
   def install
     bin.install "diu"
