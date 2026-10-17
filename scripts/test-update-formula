@@ -45,8 +45,32 @@ def test_diu_formula
   ['bin.install "diu"', 'pkgshare.install "LICENSE"', "revision 1", "depends_on :macos"].each do |value|
     assert_includes(formula, value)
   end
-  ["on_linux", 'depends_on "go"', 'system "go"', 'head "', '"LICENSES"'].each do |value|
+  ["on_macos", "on_linux", 'depends_on "go"', 'system "go"', 'head "', '"LICENSES"'].each do |value|
     raise "unexpected #{value}" if formula.include?(value)
+  end
+end
+
+def test_diu_homebrew_platforms
+  require "formula"
+  data = read_package("diu")
+  version = data.fetch("version")
+  source = render_formula(data, version, fixture_assets(data, version))
+  path = Pathname.new(File.join(repo_root, "Formula", "diu.rb"))
+  targets = [:macos, :linux].product([:arm, :intel])
+  targets.each_with_index do |(os, arch), index|
+    assert_diu_homebrew_loads(source, path, os, arch, index)
+  end
+end
+
+def assert_diu_homebrew_loads(source, path, os, arch, index)
+  Homebrew::SimulateSystem.with(os: os, arch: arch) do
+    namespace = "DiuPlatformTest#{index}"
+    klass = Formulary.load_formula("diu", path, source, namespace, flags: [], ignore_errors: false)
+    formula = klass.new("diu", path, :stable, tap: Tap.fetch("yowainwright/tap"))
+    arch_name = arch == :arm ? "arm64" : "amd64"
+    assert_includes(formula.stable.url, "_darwin_#{arch_name}.tar.gz")
+    macos_only = formula.requirements.any? { |requirement| requirement.is_a?(MacOSRequirement) }
+    raise "macOS requirement missing for #{os}/#{arch}" unless macos_only
   end
 end
 
@@ -143,4 +167,5 @@ test_diu_formula
 test_existing_formula_defaults
 test_pastoralist_formula
 test_revision_and_platform_validation
+test_diu_homebrew_platforms if defined?(Homebrew)
 puts "formula generation tests passed"
