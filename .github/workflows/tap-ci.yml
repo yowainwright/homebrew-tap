@@ -5,7 +5,6 @@ on:
   merge_group:
 
 env:
-  HOMEBREW_NO_REQUIRE_TAP_TRUST: "1"
   HOMEBREW_GITHUB_API_TOKEN: ${{ github.token }}
 
 permissions:
@@ -23,8 +22,10 @@ jobs:
         run: |
           brew list ruby >/dev/null 2>&1 || brew install ruby
           echo "$(brew --prefix ruby)/bin" >> "$GITHUB_PATH"
-      - name: Link tap checkout
-        run: brew tap yowainwright/tap "$GITHUB_WORKSPACE"
+      - name: Link and trust tap checkout
+        run: |
+          brew tap yowainwright/tap "$GITHUB_WORKSPACE"
+          brew trust yowainwright/tap
       - name: Install lint tools
         run: brew bundle install --no-upgrade
       - name: Lint scripts, documentation, workflows, and formulae
