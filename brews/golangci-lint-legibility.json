@@ -1,0 +1,13 @@
+{
+  "name": "golangci-lint-legibility",
+  "class_name": "GolangciLintLegibility",
+  "command": "legibility-golangci-lint",
+  "repo": "yowainwright/go-lint-legibility",
+  "desc": "Syntax-only Go readability rules for golangci-lint",
+  "homepage": "https://github.com/yowainwright/go-lint-legibility",
+  "license": "MIT",
+  "version": "0.3.1",
+  "asset_prefix": "golangci-lint-legibility",
+  "managed": false,
+  "readme": true
+}

@@ -6,8 +6,11 @@
   "desc": "Enforce dependency version policy across projects, workspaces, and CI",
   "homepage": "https://jeffry.in/codependence/",
   "license": "MIT",
-  "version": "1.0.12",
+  "version": "1.0.16",
   "asset_prefix": "codependence",
-  "managed": false,
-  "readme": true
+  "managed": true,
+  "readme": true,
+  "aliases": [
+    "cdp"
+  ]
 }

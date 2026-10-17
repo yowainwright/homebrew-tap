@@ -2,7 +2,8 @@
 
 ## Purpose
 
-This repository is a Homebrew tap for yowainwright CLI tools. Optimize changes for repeatable, validated, automergeable releases.
+This repository is a Homebrew tap for yowainwright CLI tools.
+Optimize changes for repeatable, validated, automergeable releases.
 
 - Do not create files or directories before checking whether they already exist.
 - Do not stage, commit, push, deploy, publish, or write through GitHub unless explicitly asked.
@@ -15,8 +16,12 @@ This repository is a Homebrew tap for yowainwright CLI tools. Optimize changes f
 - Do not add CLI casks. Reserve `Casks/` for app-style artifacts only.
 - Do not keep formulae at the repository root.
 - Prefer one standard binary formula lane for every CLI package.
-- Each formula must have `desc`, `homepage`, a detected version, `license`, platform URLs, non-empty `sha256` values, one `install` block, and a real `test do` block.
-- Let Homebrew infer versions from release URLs. Add an explicit `version` only when detection fails or is incorrect; redundant declarations fail `brew audit --strict`. The shared binary template uses versioned release URLs for both raw binaries and archives. See https://docs.brew.sh/Formula-Cookbook#grab-the-url.
+- Each formula must have `desc`, `homepage`, a detected version, `license`, platform URLs,
+  non-empty `sha256` values, one `install` block, and a real `test do` block.
+- Let Homebrew infer versions from release URLs. Add an explicit `version` only when detection fails or is incorrect;
+  redundant declarations fail `brew audit --strict`.
+  The shared binary template uses versioned release URLs for both raw binaries and archives.
+  See [Homebrew's URL guidance](https://docs.brew.sh/Formula-Cookbook#grab-the-url).
 - One package release per pull request.
 
 ## Formula Shape
@@ -51,7 +56,8 @@ Use repo scripts:
 
 `brews/*.json` is inventory. The scripts may generate only entries with `managed: true`.
 
-Set `managed: true` only after upstream publishes the standard asset matrix and `command --version` prints the formula version.
+Set `managed: true` only after upstream publishes the standard asset matrix
+and `command --version` prints the formula version.
 
 If a script fails, report the failed invariant and stop.
 
@@ -83,6 +89,7 @@ Before a release PR is considered good, run the tap CI checks locally when feasi
 
 - Before editing, name the exact Homebrew default, formula template, script, or release pattern being used.
 - If you cannot name it, do not edit.
-- Ask: "I'm at `<file>`, implementing `<specific release behavior>`. Which `<specific Homebrew/script/release pattern>` should I use?"
+- Ask: "I'm at `<file>`, implementing `<specific release behavior>`.
+  Which `<specific Homebrew/script/release pattern>` should I use?"
 - Ask one buffer question only after the default path is exhausted.
 - Do not invent one-off formula structures, casks for CLIs, bespoke release flows, or new architecture.

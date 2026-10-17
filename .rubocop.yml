@@ -1,0 +1,26 @@
+AllCops:
+  TargetRubyVersion: 3.3
+  DisabledByDefault: true
+  NewCops: disable
+  Include:
+    - scripts/**/*
+  Exclude:
+    - scripts/configure-package
+    - scripts/test-configure-package
+
+Lint:
+  Enabled: true
+
+Layout:
+  Enabled: true
+
+Metrics/MethodLength:
+  Enabled: true
+  Max: 20
+  CountAsOne: [array, hash, heredoc]
+
+Metrics/CyclomaticComplexity:
+  Enabled: true
+
+Metrics/PerceivedComplexity:
+  Enabled: true

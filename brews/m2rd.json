@@ -1,0 +1,13 @@
+{
+  "name": "m2rd",
+  "class_name": "M2rd",
+  "command": "m2rd",
+  "repo": "yowainwright/m2rd",
+  "desc": "Render Mermaid diagrams in the terminal and export SVG",
+  "homepage": "https://github.com/yowainwright/m2rd",
+  "license": "MIT",
+  "version": "0.0.12",
+  "asset_prefix": "m2rd",
+  "managed": false,
+  "readme": false
+}

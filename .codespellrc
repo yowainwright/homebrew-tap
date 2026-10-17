@@ -1,0 +1,4 @@
+[codespell]
+check-hidden = true
+skip = .git,.claude,.codex,tmp,vendor,node_modules
+ignore-regex = File::WRONLY

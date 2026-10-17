@@ -1,0 +1,9 @@
+{
+  "globs": ["**/*.md"],
+  "ignores": ["tmp/**", "vendor/**", "node_modules/**", ".claude/**", ".codex/**"],
+  "config": {
+    "default": true,
+    "MD013": { "line_length": 120, "code_blocks": false, "tables": false },
+    "MD024": { "siblings_only": true }
+  }
+}
