@@ -5,12 +5,12 @@ class Diu < Formula
   desc "Track package-manager and global CLI usage"
   homepage "https://github.com/yowainwright/diu"
   url on_arch_conditional(
-    arm:   "https://github.com/yowainwright/diu/releases/download/v0.4.0/diu_0.4.0_darwin_arm64.tar.gz",
-    intel: "https://github.com/yowainwright/diu/releases/download/v0.4.0/diu_0.4.0_darwin_amd64.tar.gz",
+    arm:   "https://github.com/yowainwright/diu/releases/download/v0.5.0/diu_0.5.0_darwin_arm64.tar.gz",
+    intel: "https://github.com/yowainwright/diu/releases/download/v0.5.0/diu_0.5.0_darwin_amd64.tar.gz",
   )
   sha256 on_arch_conditional(
-    arm:   "234fff17bf381e4d9f80bd841fcfb9b446cda789a3e0cf015a52fdff407edc82",
-    intel: "d42ab7c6ac5de876c3cd8360679301c137b4e747eacceec122240ed2a553fa8c",
+    arm:   "d1d30b7120aae85999e74e684815c41fc72dbba1fdbf639ffb981a18a4ac0493",
+    intel: "5437275f0f77d37b0d5c4c39869043f5f4d58ce94704f3ce8761e4a9a85a0729",
   )
   license "MIT"
 
