@@ -120,6 +120,7 @@ fs-lint check --staged
 ```
 
 ---
+
 ### [legibility](https://github.com/yowainwright/legibility)
 
 Configure existing Legibility tools for readable code.
