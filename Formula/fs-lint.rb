@@ -8,25 +8,25 @@ class FsLint < Formula
 
   on_macos do
     on_arm do
-      url "https://github.com/yowainwright/fs-lint/releases/download/v0.3.0/fs-lint-darwin-arm64"
-      sha256 "cfd44a7d715ff70cd3d33e16f756f530035002bb2206f58afec8db2178997edb"
+      url "https://github.com/yowainwright/fs-lint/releases/download/v0.4.0/fs-lint-darwin-arm64"
+      sha256 "05cf50c036f73b766b1c6a83368ffeb05d2178c91e3ac5ca5d224aa06bc04ede"
     end
 
     on_intel do
-      url "https://github.com/yowainwright/fs-lint/releases/download/v0.3.0/fs-lint-darwin-amd64"
-      sha256 "acb9003f264e9b9436d6955c6ece6a430c54bee6734d6acbcdeb96cb2c359170"
+      url "https://github.com/yowainwright/fs-lint/releases/download/v0.4.0/fs-lint-darwin-amd64"
+      sha256 "6c15e6783667252d7868717b3a25a09b641d7c51a88620b936ae85511b4689d2"
     end
   end
 
   on_linux do
     on_arm do
-      url "https://github.com/yowainwright/fs-lint/releases/download/v0.3.0/fs-lint-linux-arm64"
-      sha256 "52f0085c221b7058bf6baff2c349c27a841f376852d3e9cd48982df843b79054"
+      url "https://github.com/yowainwright/fs-lint/releases/download/v0.4.0/fs-lint-linux-arm64"
+      sha256 "d8ca6d1f2a6874b587e6d683f8b5005604724b0393a873c68fd59b10fbb9f202"
     end
 
     on_intel do
-      url "https://github.com/yowainwright/fs-lint/releases/download/v0.3.0/fs-lint-linux-amd64"
-      sha256 "6852523905b35df0548e73907dd35772af76f72abc3cc91e27f50017b40cc5c9"
+      url "https://github.com/yowainwright/fs-lint/releases/download/v0.4.0/fs-lint-linux-amd64"
+      sha256 "b521d1e595fde41aa11d06c0f306c12f9bec809e4365b7ca4f97e01b0e3e6095"
     end
   end
 
