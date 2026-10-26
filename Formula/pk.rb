@@ -8,25 +8,25 @@ class Pk < Formula
 
   on_macos do
     on_arm do
-      url "https://github.com/yowainwright/pk/releases/download/v0.3.0/pk-darwin-arm64"
-      sha256 "54a1c106fb4090fe5f02176658c5b0ef1a67eb35cf82eebd1125c06fd16741ce"
+      url "https://github.com/yowainwright/pk/releases/download/v0.3.1/pk-darwin-arm64"
+      sha256 "10e42d099a0a516816f4be4a49e14c5177d68a35116d9d979374f1b2f8dee77e"
     end
 
     on_intel do
-      url "https://github.com/yowainwright/pk/releases/download/v0.3.0/pk-darwin-amd64"
-      sha256 "12e8ea6b4dbf34a10926875ebd4ea83421c44d5015859ff2f8b5b8aed7ed8364"
+      url "https://github.com/yowainwright/pk/releases/download/v0.3.1/pk-darwin-amd64"
+      sha256 "063884322c3c4cfd554a6ebb1484eb1592ca1bb20b970296b8207670fa72b031"
     end
   end
 
   on_linux do
     on_arm do
-      url "https://github.com/yowainwright/pk/releases/download/v0.3.0/pk-linux-arm64"
-      sha256 "7018709439078354d077d5cf7c98634df947d83f631031cb6d840d4133e0d3a8"
+      url "https://github.com/yowainwright/pk/releases/download/v0.3.1/pk-linux-arm64"
+      sha256 "9ec004adaf431ed9077370fb4df14b2e21b23d9580422a24cd875aea9979d6c3"
     end
 
     on_intel do
-      url "https://github.com/yowainwright/pk/releases/download/v0.3.0/pk-linux-amd64"
-      sha256 "5b9c0254acc33ce1de5f8d7045fb975aa84c4e9cd3738d2ac2d39d276c216e88"
+      url "https://github.com/yowainwright/pk/releases/download/v0.3.1/pk-linux-amd64"
+      sha256 "b18b629d40bf4609880ba7a447db61ebbacf2eb177b36b80d5954ef7e7a89f57"
     end
   end
 
