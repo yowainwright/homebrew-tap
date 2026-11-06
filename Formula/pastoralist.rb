@@ -8,25 +8,25 @@ class Pastoralist < Formula
 
   on_macos do
     on_arm do
-      url "https://github.com/yowainwright/pastoralist/releases/download/v1.14.0/pastoralist-darwin-arm64"
-      sha256 "e53f1a2afa0fe1af11ba3c9cf67915c340944306b1f724df4e3af283682a0562"
+      url "https://github.com/yowainwright/pastoralist/releases/download/v1.14.1/pastoralist-darwin-arm64"
+      sha256 "0159d155b2242635a71c3479e26c0a1a9e1955f033ab9e477c2d194c4399d4a4"
     end
 
     on_intel do
-      url "https://github.com/yowainwright/pastoralist/releases/download/v1.14.0/pastoralist-darwin-amd64"
-      sha256 "4c1356db6b7dd7c049644489e3b3c72a3c152f67bbe74a0f1c12fcb1a09a543c"
+      url "https://github.com/yowainwright/pastoralist/releases/download/v1.14.1/pastoralist-darwin-amd64"
+      sha256 "57c31384a720bc27eeb1fdb42d8d8f0cec351a5fbc24f34ebb4cb507b9c7a445"
     end
   end
 
   on_linux do
     on_arm do
-      url "https://github.com/yowainwright/pastoralist/releases/download/v1.14.0/pastoralist-linux-arm64"
-      sha256 "de28f780c84853ad6b9e65da92335dc79cfecba768037a1ab2fcd26b227e962b"
+      url "https://github.com/yowainwright/pastoralist/releases/download/v1.14.1/pastoralist-linux-arm64"
+      sha256 "619fe2f320b363c89ace8f29601546ddb4b05c8e4459768c8999073b7871d171"
     end
 
     on_intel do
-      url "https://github.com/yowainwright/pastoralist/releases/download/v1.14.0/pastoralist-linux-amd64"
-      sha256 "a424460cbaaa82f2b63462b9a660301ae7b14b3133f27400979e95365a51c52b"
+      url "https://github.com/yowainwright/pastoralist/releases/download/v1.14.1/pastoralist-linux-amd64"
+      sha256 "814527221a6a4fc8f3a352ab0aed58af6a27b68bf6bc7e04a09c1ce525f03d50"
     end
   end
 
