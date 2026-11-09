@@ -196,6 +196,31 @@ legibility-golangci-lint run ./...
 ```
 
 ---
+
+### [hnetctl](https://github.com/yowainwright/hnet)
+
+Private agent observability for trusted Macs
+
+Install [hnetctl](Formula/hnet.rb) | `Formula/hnet.rb`
+
+```bash
+brew install yowainwright/tap/hnet
+```
+
+Usage
+
+<!-- Hnet enrollment instructions from brews/hnet.json#caveats -->
+Preview release: strict queue expiry and backup verification remain unfinished.
+After installing prerequisites and completing app sign-ins, enroll this Mac:
+
+```bash
+hnetctl client-install
+```
+
+Open a new terminal and verify connectivity with `hnetctl client-check --connection`.
+Package removal preserves private state and does not revoke ingestion tokens.
+
+---
 <!-- formulas:end -->
 
 ## Updating
