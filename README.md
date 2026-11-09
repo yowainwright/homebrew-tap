@@ -42,9 +42,13 @@ brew install yowainwright/tap/diu
 
 Usage
 
+<!-- DIU activation instructions from brews/diu.json#caveats -->
+Run setup once after installation. Then open a new zsh terminal, or restart
+this shell:
+
 ```bash
 diu setup
-diu scan
+exec zsh -l
 ```
 
 ---

@@ -67,6 +67,8 @@ def assert_diu_homebrew_loads(source, path, os, arch, index)
     namespace = "DiuPlatformTest#{index}"
     klass = Formulary.load_formula("diu", path, source, namespace, flags: [], ignore_errors: false)
     formula = klass.new("diu", path, :stable, tap: Tap.fetch("yowainwright/tap"))
+    assert_includes(formula.caveats, "diu setup")
+    assert_includes(formula.caveats, "exec zsh -l")
     arch_name = arch == :arm ? "arm64" : "amd64"
     assert_includes(formula.stable.url, "_darwin_#{arch_name}.tar.gz")
     macos_only = formula.requirements.any? { |requirement| requirement.is_a?(MacOSRequirement) }
@@ -80,6 +82,7 @@ def test_existing_formula_defaults
     version = data.fetch("version")
     formula = render_formula(data, version, fixture_assets(data, version))
     RubyVM::InstructionSequence.compile(formula)
+    assert_equal(false, formula.include?("def caveats"))
     assert_includes(formula, "on_macos do")
     assert_includes(formula, "on_linux do")
     assert_equal(4, formula.scan(/sha256 /).length)
@@ -145,6 +148,26 @@ def test_command_alias_validation
   end
 end
 
+def test_caveats_validation
+  assert_equal([], TapRelease.caveats({}))
+  assert_equal(["message", ""], TapRelease.caveats("caveats" => ["message", ""]))
+  ["message", nil, [nil], [1]].each do |lines|
+    assert_rejects { TapRelease.caveats("caveats" => lines) }
+  end
+end
+
+def test_generated_caveats_preserve_literal_text
+  require "formula"
+  lines = ['quotes: "example"', "literal \#{raise 'interpolated'}", 'literal \n']
+  data = read_package("diu").merge("caveats" => lines)
+  version = data.fetch("version")
+  source = render_formula(data, version, fixture_assets(data, version))
+  path = Pathname.new(File.join(repo_root, "Formula", "diu.rb"))
+  klass = Formulary.load_formula("diu", path, source, "DiuCaveatsLiteralTest", flags: [], ignore_errors: false)
+  formula = klass.new("diu", path, :stable, tap: Tap.fetch("yowainwright/tap"))
+  assert_equal(lines.join("\n"), formula.caveats)
+end
+
 def test_command_conflict_validation
   packages = [
     ["one", { "command" => "one", "aliases" => ["shared"] }],
@@ -158,6 +181,8 @@ def test_command_conflict_validation
   assert_equal(expected, TapRelease.command_conflicts(packages))
 end
 
+test_caveats_validation
+test_generated_caveats_preserve_literal_text if defined?(Homebrew)
 test_codependence_formula_alias
 test_generated_command_alias
 test_command_alias_validation

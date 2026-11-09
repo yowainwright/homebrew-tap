@@ -57,6 +57,14 @@ module TapRelease
     names
   end
 
+  def self.caveats(data)
+    lines = data.fetch("caveats", [])
+    valid_lines = lines.is_a?(Array) && lines.all? { |line| line.is_a?(String) }
+    raise ArgumentError, "caveats must contain strings" unless valid_lines
+
+    lines
+  end
+
   def self.command_conflicts(packages)
     owners = {}
     packages.flat_map do |path, data|

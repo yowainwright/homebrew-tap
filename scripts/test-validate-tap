@@ -56,7 +56,9 @@ def test_invalid_metadata(root, data)
     [{ "archive" => "yes" }, "archive must be true or false"],
     [{ "name" => "wrong-name" }, "name must be custom-tool"],
     [{ "revision" => -1 }, "revision must be a nonnegative integer"],
-    [{ "archive_files" => ["../LICENSE"] }, "archive_files must contain filenames"]
+    [{ "archive_files" => ["../LICENSE"] }, "archive_files must contain filenames"],
+    [{ "caveats" => "message" }, "caveats must contain strings"],
+    [{ "caveats" => [nil] }, "caveats must contain strings"]
   ]
   path = "#{root}/brews/custom-tool.json"
   cases.each do |changes, message|

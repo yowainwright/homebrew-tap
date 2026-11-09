@@ -67,6 +67,17 @@ class <%= class_name %> < Formula
 <% end -%>
   end
 
+<% caveats = TapRelease.caveats(data) -%>
+<% unless caveats.empty? -%>
+  def caveats
+    [
+<% caveats.each do |line| -%>
+      <%= line.dump %>,
+<% end -%>
+    ].join("\n")
+  end
+
+<% end -%>
   test do
     assert_match version.to_s, shell_output("#{bin}/<%= command %> --version")
 <% TapRelease.aliases(data).each do |alias_name| -%>
