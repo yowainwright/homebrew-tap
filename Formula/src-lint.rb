@@ -8,25 +8,25 @@ class SrcLint < Formula
 
   on_macos do
     on_arm do
-      url "https://github.com/yowainwright/src-lint/releases/download/v0.1.2/src-lint-darwin-arm64"
-      sha256 "4d29bff40c255ed007d3c562e9d5aab6db6c56f0180b3cfc5f1979a62daac388"
+      url "https://github.com/yowainwright/src-lint/releases/download/v0.2.0/src-lint-darwin-arm64"
+      sha256 "7c113fc44136549a9a37c3c00df6f3c1a134ab38076e85b5c2d0c00930d3147d"
     end
 
     on_intel do
-      url "https://github.com/yowainwright/src-lint/releases/download/v0.1.2/src-lint-darwin-amd64"
-      sha256 "3837d437a05d6e13c635b05c32b72511529b4215721bd04f9902ea77804485c1"
+      url "https://github.com/yowainwright/src-lint/releases/download/v0.2.0/src-lint-darwin-amd64"
+      sha256 "50890f899a8fd5c4a39d8dd82398469a5c4b5f84b92e7b04ff12dd313edebd91"
     end
   end
 
   on_linux do
     on_arm do
-      url "https://github.com/yowainwright/src-lint/releases/download/v0.1.2/src-lint-linux-arm64"
-      sha256 "b3c5dee527adbbffff214cae355a3be0e59e28c297fdc6a7797e5dbf08f7038e"
+      url "https://github.com/yowainwright/src-lint/releases/download/v0.2.0/src-lint-linux-arm64"
+      sha256 "db3c4b0301100eb55543d46cf490233d4c1a031815b73633404df23d78252952"
     end
 
     on_intel do
-      url "https://github.com/yowainwright/src-lint/releases/download/v0.1.2/src-lint-linux-amd64"
-      sha256 "ce9a289747661aeff1dd242e9f35c586ee303d253c478c4ab50d1a59a5e27459"
+      url "https://github.com/yowainwright/src-lint/releases/download/v0.2.0/src-lint-linux-amd64"
+      sha256 "a1e5f86fc157cfc22d004f57311f2d3d7e35249f1383bd2dcdcd36bf6e2006f5"
     end
   end
 
