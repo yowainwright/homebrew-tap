@@ -21,6 +21,16 @@ class Diu < Formula
     pkgshare.install "LICENSE"
   end
 
+  def caveats
+    [
+      "Enable zsh tracking and start DIU at login (one-time setup):",
+      "  diu setup",
+      "",
+      "Open a new zsh terminal to start tracking, or run:",
+      "  exec zsh -l",
+    ].join("\n")
+  end
+
   test do
     assert_match version.to_s, shell_output("#{bin}/diu --version")
   end

@@ -17,5 +17,12 @@
   "asset_template": "diu_%{version}_%{os}_%{arch}.tar.gz",
   "archive_files": [
     "LICENSE"
+  ],
+  "caveats": [
+    "Enable zsh tracking and start DIU at login (one-time setup):",
+    "  diu setup",
+    "",
+    "Open a new zsh terminal to start tracking, or run:",
+    "  exec zsh -l"
   ]
 }
