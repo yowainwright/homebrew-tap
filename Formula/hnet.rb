@@ -5,12 +5,12 @@ class Hnet < Formula
   desc "Private agent observability for trusted Macs"
   homepage "https://github.com/yowainwright/hnet"
   url on_arch_conditional(
-    arm:   "https://github.com/yowainwright/hnet/releases/download/v0.1.0/hnet-0.1.0-darwin-arm64.tar.gz",
-    intel: "https://github.com/yowainwright/hnet/releases/download/v0.1.0/hnet-0.1.0-darwin-amd64.tar.gz",
+    arm:   "https://github.com/yowainwright/hnet/releases/download/v0.1.2/hnet-0.1.2-darwin-arm64.tar.gz",
+    intel: "https://github.com/yowainwright/hnet/releases/download/v0.1.2/hnet-0.1.2-darwin-amd64.tar.gz",
   )
   sha256 on_arch_conditional(
-    arm:   "21eeb2b8a9c4fb31558ce144b237c464c2030b5bbdd854760f357824eda00fe3",
-    intel: "21eeb2b8a9c4fb31558ce144b237c464c2030b5bbdd854760f357824eda00fe3",
+    arm:   "9df2feb367928e761c2b63571d68c8f53eeb7562fc6d3ed6f81e55627f643507",
+    intel: "9df2feb367928e761c2b63571d68c8f53eeb7562fc6d3ed6f81e55627f643507",
   )
   license "MIT"
 
