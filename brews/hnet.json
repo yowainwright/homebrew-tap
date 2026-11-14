@@ -20,7 +20,8 @@
     "VERSION",
     "LICENSE",
     "SHA256SUMS",
-    "install.sh"
+    "install.sh",
+    "README.md"
   ],
   "caveats": [
     "Preview release: strict queue expiry and backup verification remain unfinished.",

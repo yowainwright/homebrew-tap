@@ -6,7 +6,7 @@
   "desc": "Check declaration and function order in source files",
   "homepage": "https://github.com/yowainwright/struct-lint",
   "license": "MIT",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "asset_prefix": "struct-lint",
   "archive": true,
   "managed": true,

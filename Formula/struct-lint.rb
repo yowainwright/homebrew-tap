@@ -8,25 +8,25 @@ class StructLint < Formula
 
   on_macos do
     on_arm do
-      url "https://github.com/yowainwright/struct-lint/releases/download/v0.1.0/struct-lint-darwin-arm64.tar.gz"
-      sha256 "0d8596f08cfa6cfd25010ce88b15e2e7e897dc58927c2934381db75c08b9a5e6"
+      url "https://github.com/yowainwright/struct-lint/releases/download/v0.1.2/struct-lint-darwin-arm64.tar.gz"
+      sha256 "4e2c9775d12248c71c9584b1fac2b430324e48b5f65c10d9757c7b3bdf5b6f00"
     end
 
     on_intel do
-      url "https://github.com/yowainwright/struct-lint/releases/download/v0.1.0/struct-lint-darwin-amd64.tar.gz"
-      sha256 "bf1e775d0bf00927708eb8443ebdcde8327bd6df63108250845d92f1d3e0b451"
+      url "https://github.com/yowainwright/struct-lint/releases/download/v0.1.2/struct-lint-darwin-amd64.tar.gz"
+      sha256 "97d58b213da0276c557c6182f09034aed8883723163a3b41fb8f128908e94130"
     end
   end
 
   on_linux do
     on_arm do
-      url "https://github.com/yowainwright/struct-lint/releases/download/v0.1.0/struct-lint-linux-arm64.tar.gz"
-      sha256 "c45b43c018f0c858ba961aa60878a18bf55319b4d97c41cf0ebe68ad6ca739a3"
+      url "https://github.com/yowainwright/struct-lint/releases/download/v0.1.2/struct-lint-linux-arm64.tar.gz"
+      sha256 "2e39d754781e56b31375c57b3a42781bcd05ba713576c2c76d5da5e94d325ec3"
     end
 
     on_intel do
-      url "https://github.com/yowainwright/struct-lint/releases/download/v0.1.0/struct-lint-linux-amd64.tar.gz"
-      sha256 "a565e3af83de0276579b46eeac8d918b537a90ad6724b243001fe65cd75d9344"
+      url "https://github.com/yowainwright/struct-lint/releases/download/v0.1.2/struct-lint-linux-amd64.tar.gz"
+      sha256 "fc37c9120d7df13c6cfb642e571c16dfffbc9b04208515af86c7fe6ee3dbadda"
     end
   end
 
