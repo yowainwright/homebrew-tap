@@ -6,7 +6,7 @@
   "desc": "Render Mermaid diagrams in the terminal and export SVG",
   "homepage": "https://github.com/yowainwright/m2rd",
   "license": "MIT",
-  "version": "0.0.12",
+  "version": "0.0.18",
   "asset_prefix": "m2rd",
   "managed": false,
   "readme": false
