@@ -8,25 +8,25 @@ class Codependence < Formula
 
   on_macos do
     on_arm do
-      url "https://github.com/yowainwright/codependence/releases/download/v1.0.16/codependence-darwin-arm64"
-      sha256 "aa136960512b18aa0eca8e419ebae9bea2430ae7f59383eb7714b88717928a4f"
+      url "https://github.com/yowainwright/codependence/releases/download/v1.1.1/codependence-darwin-arm64"
+      sha256 "1d6db1b8de62b76a211288ad16f02ad83f6463ae6014769fa145a055c470c201"
     end
 
     on_intel do
-      url "https://github.com/yowainwright/codependence/releases/download/v1.0.16/codependence-darwin-amd64"
-      sha256 "50f26fe25a08c4ae40914a511687bfd7aaa8c175aaac109eb0ea26cab3f6a17e"
+      url "https://github.com/yowainwright/codependence/releases/download/v1.1.1/codependence-darwin-amd64"
+      sha256 "7a2eb53dc40fecba36b5d71a94adbf6493f3978d4f4a298a1e2e2bef771629a6"
     end
   end
 
   on_linux do
     on_arm do
-      url "https://github.com/yowainwright/codependence/releases/download/v1.0.16/codependence-linux-arm64"
-      sha256 "fa55c02eaa2ae6931791bf0b0c5d6a9d0a646b16dc3cbe30f6e1c107aa2b385a"
+      url "https://github.com/yowainwright/codependence/releases/download/v1.1.1/codependence-linux-arm64"
+      sha256 "b40374176dbde1ac884f4adaa4be14870d8bc61259bf7e815ce2d81e88f0c8af"
     end
 
     on_intel do
-      url "https://github.com/yowainwright/codependence/releases/download/v1.0.16/codependence-linux-amd64"
-      sha256 "2640013f5db1933f63936e6da11febd42826f0440320d32ebe0f72a321daab10"
+      url "https://github.com/yowainwright/codependence/releases/download/v1.1.1/codependence-linux-amd64"
+      sha256 "cc8d2d34772f00dbff544aa0681f096c8fa5371849fe3326eeda28bd27f58a42"
     end
   end
 
