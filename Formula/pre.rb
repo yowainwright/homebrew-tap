@@ -8,25 +8,25 @@ class Pre < Formula
 
   on_macos do
     on_arm do
-      url "https://github.com/yowainwright/pre/releases/download/v0.6.8/pre-darwin-arm64"
-      sha256 "b3097fb4f034ca52c60223c53ba4db5460c69cae0dea9de6d4e3055b824fd0aa"
+      url "https://github.com/yowainwright/pre/releases/download/v0.6.9/pre-darwin-arm64"
+      sha256 "63a3fc1bac4a55a7c3dbed21443394f7419dfe673980f6be72a9938a88023169"
     end
 
     on_intel do
-      url "https://github.com/yowainwright/pre/releases/download/v0.6.8/pre-darwin-amd64"
-      sha256 "23cb8de0aa92deb307f223e5c16aa1a4fba1ce5dd2c91b8f3554d87723ec31f6"
+      url "https://github.com/yowainwright/pre/releases/download/v0.6.9/pre-darwin-amd64"
+      sha256 "de1b821823a04cf35727d735ae8db2d027a58e4340e165fb75bcc700b0d1129a"
     end
   end
 
   on_linux do
     on_arm do
-      url "https://github.com/yowainwright/pre/releases/download/v0.6.8/pre-linux-arm64"
-      sha256 "0947be1ffcd6a44646fed111835c541fd4f71cded9eed4a035ba5fb448eef8cd"
+      url "https://github.com/yowainwright/pre/releases/download/v0.6.9/pre-linux-arm64"
+      sha256 "fbbdbb436a4413935d3bafe26542d7fc93ead9b06e8b3537ca5456a60c466127"
     end
 
     on_intel do
-      url "https://github.com/yowainwright/pre/releases/download/v0.6.8/pre-linux-amd64"
-      sha256 "6753d9abf7b03d0b53965b1889047434c9645e34711ee85fe09badd00d866b58"
+      url "https://github.com/yowainwright/pre/releases/download/v0.6.9/pre-linux-amd64"
+      sha256 "4e0181956331275d56e8e2c9b438a5b221c4deb2ab01412bcedf74fc6ad6fee6"
     end
   end
 
