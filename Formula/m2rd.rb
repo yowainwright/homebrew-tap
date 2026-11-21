@@ -1,8 +1,8 @@
 class M2rd < Formula
   desc "Render Mermaid diagrams in the terminal and export SVG"
   homepage "https://github.com/yowainwright/m2rd"
-  url "https://github.com/yowainwright/m2rd/releases/download/v0.0.18/m2rd-0.0.18.tgz"
-  sha256 "fa361f6d29b4b1da50e29faac13ebdd6224a44acd69a38cea5a29e98a576d6fd"
+  url "https://github.com/yowainwright/m2rd/releases/download/v0.0.19/m2rd-0.0.19.tgz"
+  sha256 "60ab527da8f5912e144d903cd11b7419039cfb7b5c9a094b33a90e78fc308179"
   license "MIT"
 
   depends_on "node"
